@@ -13,15 +13,17 @@
 
   <!-- Include Electron's ipcRenderer -->
   <script>
-    const { ipcRenderer } = require('electron');
+   // renderer.js
+const { ipcRenderer } = require('electron');
 
-    function startBrowsing() {
-      ipcRenderer.send('open-chrome');
-    }
+function startBrowsing() {
+  ipcRenderer.send('message-from-renderer', 'open-chrome');
+}
 
-    function executeCommand() {
-      ipcRenderer.send('execute-command');
-    }
+function executeCommand() {
+  ipcRenderer.send('message-from-renderer', 'execute-command');
+}
+
   </script>
 </body>
 </html>
