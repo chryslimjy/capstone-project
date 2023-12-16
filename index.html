@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Electron App</title>
+</head>
+<body>
+  <!-- Your HTML elements go here -->
+
+  <button onclick="startBrowsing()">Start Browsing</button>
+  <button onclick="executeCommand()">Execute Command</button>
+
+  <!-- Include Electron's ipcRenderer -->
+  <script>
+    const { ipcRenderer } = require('electron');
+
+    function startBrowsing() {
+      ipcRenderer.send('open-chrome');
+    }
+
+    function executeCommand() {
+      ipcRenderer.send('execute-command');
+    }
+  </script>
+</body>
+</html>
