@@ -17,6 +17,10 @@ def find_microphone_index():
     print("No microphone found")
     return None
 
+
+# def recognise_command(text):
+#     #function to carry out
+
 # Get the microphone index
 mic_index = find_microphone_index()
 if mic_index is None:
