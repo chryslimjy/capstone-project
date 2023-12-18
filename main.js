@@ -1,4 +1,8 @@
+// import axios from 'axios';
+
 const { app, BrowserWindow, ipcMain } = require('electron');
+
+//const axios = require('axios');
 
 let mainWindow;
 let browserView;
@@ -11,7 +15,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
-      enableRemoteModule: true,
+      enableRemoteModule: true
     },
   });
 
@@ -24,17 +28,33 @@ function createWindow() {
   browserView.setBounds({ x: 0, y: 0, width: 800, height: 600 });
 
   // Load the YouTube URL in the BrowserView
-  browserView.webContents.loadURL('https://www.youtube.com');
+  browserView.webContents.loadURL('https://www.google.com');
 
   // Listen for the 'open-chrome' message from the renderer process
   ipcMain.on('open-chrome', () => {
     browserView.webContents.loadURL('https://www.youtube.com');
   });
 
+
+
+
   // Listen for the 'execute-command' message from the renderer process
   ipcMain.on('execute-command', () => {
     // Execute the command in the current browser window (YouTube)
-    browserView.webContents.executeJavaScript(`
+    browserView.webContents.executeJavaScript(
+
+      // axios.get('http://127.0.0.1:5000/detect-command')
+      //   .then(function (response) {
+      //     // Handle the successful response
+      //     console.log('Response:', response.data);
+      //   })
+      //   .catch(function (error) {
+      //     // Handle errors
+      //     console.error('Error:', error);
+      //   })
+
+
+        `
       var allLinks = document.getElementsByTagName("a");
 
       // Iterate through the anchor elements

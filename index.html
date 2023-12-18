@@ -1,27 +1,44 @@
+<!-- index.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Electron App</title>
+  <title>Speech Recognition Example</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </head>
 <body>
-  <!-- Your HTML elements go here -->
-
-  <button onclick="startBrowsing()">Start Browsing</button>
-  <button onclick="executeCommand()">Execute Command</button>
-
-  <!-- Include Electron's ipcRenderer -->
   <script>
-    const { ipcRenderer } = require('electron');
+    // Connect to the Socket.IO server
+    const socket = io('http://localhost:5000');
 
-    function startBrowsing() {
-      ipcRenderer.send('open-chrome');
-    }
+    // Listen for the 'connect' event, indicating successful connection
+    socket.on('connect', () => {
+      console.log('Connected to the Socket.IO server');
+    });
 
-    function executeCommand() {
-      ipcRenderer.send('execute-command');
-    }
+    // Listen for the 'disconnect' event, indicating a disconnection
+    socket.on('disconnect', (reason) => {
+      console.log('Disconnected from the Socket.IO server. Reason:', reason);
+    });
+
+    // Listen for the speech recognition event
+    socket.on('speech_recognition', (data) => {
+      const recognizedText = data.text;
+      console.log('Recognized Text:', recognizedText);
+
+      // Add your logic to execute functions based on the recognized text
+      // For example, you can call different functions or update the UI
+
+      // Log a message indicating that the speech_recognition event is received
+      console.log('Speech Recognition Event Received:', data);
+    });
+
+    // Optional: Listen for other Socket.IO events and handle them as needed
+    socket.on('custom_event', (data) => {
+      console.log('Custom Event Received:', data);
+    });
   </script>
 </body>
 </html>

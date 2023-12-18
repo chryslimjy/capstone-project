@@ -13,6 +13,9 @@
     "electron": "^28.0.0"
   },
   "dependencies": {
-    "node-fetch": "^3.3.2"
+    "axios": "^1.6.2",
+    "mic": "^2.1.2",
+    "node-fetch": "^3.3.2",
+    "vosk-js": "^0.3.0"
   }
 }
