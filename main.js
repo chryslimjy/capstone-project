@@ -39,20 +39,9 @@ function createWindow() {
 
 
   // Listen for the 'execute-command' message from the renderer process
-  ipcMain.on('execute-command', () => {
+  ipcMain.on('execute-command-click', () => {
     // Execute the command in the current browser window (YouTube)
     browserView.webContents.executeJavaScript(
-
-      // axios.get('http://127.0.0.1:5000/detect-command')
-      //   .then(function (response) {
-      //     // Handle the successful response
-      //     console.log('Response:', response.data);
-      //   })
-      //   .catch(function (error) {
-      //     // Handle errors
-      //     console.error('Error:', error);
-      //   })
-
 
         `
       var allLinks = document.getElementsByTagName("a");

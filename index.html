@@ -49,7 +49,7 @@
     function executeCommand(text) {
 
       if(text == 'click'){
-        ipcRenderer.send('execute-command');
+        ipcRenderer.send('execute-command-click');
       } else{
         console.log('command not recognised');
       }
