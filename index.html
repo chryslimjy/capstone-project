@@ -50,7 +50,30 @@
 
       if(text == 'click'){
         ipcRenderer.send('execute-command-click');
-      } else{
+        //need to highlight and assign number to each <a> tag
+        
+          //accurately select the chosen <a> tag
+
+            //enter the selected <a> tag
+      } 
+
+      else if(text.includes('search') || text.includes('such')){
+        const searchQuery = text.substring('search'.length).trim();
+        ipcRenderer.send('search-query', searchQuery)
+      }
+
+      else if(text.includes('input')){
+        const searchBar = text.substring('input'.length).trim();
+        ipcRenderer.send('search-bar', searchBar);
+
+        if(text == 'submit'){
+          ipcRenderer.send('submit');
+        }
+
+      }
+      
+      
+      else{
         console.log('command not recognised');
       }
       
