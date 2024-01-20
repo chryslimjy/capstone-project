@@ -14,6 +14,7 @@
   <script>
     // Connect to the Socket.IO server
     const socket = io('http://localhost:5000');
+    const { ipcRenderer } = require('electron');
 
     // Listen for the 'connect' event, indicating successful connection
     socket.on('connect', () => {
@@ -30,6 +31,8 @@
       const recognizedText = data.text;
       console.log('Recognized Text:', recognizedText);
 
+      executeCommand(recognizedText.toString())
+
       // Add your logic to execute functions based on the recognized text
       // For example, you can call different functions or update the UI
 
@@ -41,6 +44,42 @@
     socket.on('custom_event', (data) => {
       console.log('Custom Event Received:', data);
     });
+
+    //scripts for functions
+    function executeCommand(text) {
+
+      if(text == 'click'){
+        ipcRenderer.send('execute-command-click');
+        //need to highlight and assign number to each <a> tag
+        
+          //accurately select the chosen <a> tag
+
+            //enter the selected <a> tag
+      } 
+
+      else if(text.includes('search') || text.includes('such')){
+        const searchQuery = text.substring('search'.length).trim();
+        ipcRenderer.send('search-query', searchQuery)
+      }
+
+      else if(text.includes('input')){
+        const searchBar = text.substring('input'.length).trim();
+        ipcRenderer.send('search-bar', searchBar);
+
+      }else if(text == 'submit'){
+          ipcRenderer.send('submit');
+        }
+      
+      
+      else{
+        console.log('command not recognised');
+      }
+      
+    }
+
+
+
+  
   </script>
 </body>
 </html>
