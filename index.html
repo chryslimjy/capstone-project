@@ -66,11 +66,9 @@
         const searchBar = text.substring('input'.length).trim();
         ipcRenderer.send('search-bar', searchBar);
 
-        if(text == 'submit'){
+      }else if(text == 'submit'){
           ipcRenderer.send('submit');
         }
-
-      }
       
       
       else{
