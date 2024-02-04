@@ -80,17 +80,12 @@
       }
 
       else if (text == 'down') {
-        // Simulate one arrow down press
-        const downKeyEvent = new KeyboardEvent('keydown', { key: 'ArrowDown' });
-        document.dispatchEvent(downKeyEvent);
+        ipcRenderer.send('move-down');
       }
 
       else if (text == 'up') {
-        // Simulate one arrow down press
-        const downKeyEvent = new KeyboardEvent('keydown', { key: 'ArrowUp' });
-        document.dispatchEvent(downKeyEvent);
+        ipcRenderer.send('move-up');
       }
-
 
       else {
         console.log('command not recognised');

@@ -99,6 +99,8 @@ for (var i = 0; i < allLinks.length; i++) {
   });
 
 
+  
+
   ipcMain.on('submit', () => {
 
     `
@@ -109,6 +111,29 @@ for (var i = 0; i < allLinks.length; i++) {
       inputField.form.submit();
     }
     `
+  });
+
+  ipcMain.on('move-down', (event, query) => {
+    browserView.webContents.executeJavaScript(
+      `
+      window.scrollTo({
+        top: window.scrollY + 120,
+        behavior: 'smooth'
+      });
+    `);
+   // browserView.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ArrowDown' });
+  });
+
+
+  ipcMain.on('move-up', (event, query) => {
+    browserView.webContents.executeJavaScript(
+      `
+      window.scrollTo({
+        top: window.scrollY - 120,
+        behavior: 'smooth'
+      });
+    `);
+   // browserView.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ArrowDown' });
   });
 
 
