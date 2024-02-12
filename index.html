@@ -42,14 +42,10 @@
 
       executeCommand(recognizedText.toString())
 
-      // Add your logic to execute functions based on the recognized text
-      // For example, you can call different functions or update the UI
-
-      // Log a message indicating that the speech_recognition event is received
       console.log('Speech Recognition Event Received:', data);
     });
 
-    // Optional: Listen for other Socket.IO events and handle them as needed
+   
     socket.on('custom_event', (data) => {
       console.log('Custom Event Received:', data);
     });
