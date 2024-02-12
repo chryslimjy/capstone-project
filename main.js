@@ -10,8 +10,8 @@ let browserView;
 function createWindow() {
   // Create the main browser window
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 900,
+    height: 750,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -31,19 +31,47 @@ function createWindow() {
   browserView.webContents.loadURL('https://www.google.com');
 
 
-ipcMain.on('execute-command-click', () => {
-
- browserView.webContents.executeJavaScript(
-  `
-  var aTags = document.getElementsByTagName("a");
- for (var i = 0; i < aTags.length; i++) {
-   var h3Tags = aTags[i].getElementsByTagName("h3");
-   for (var j = 0; j < h3Tags.length; j++) {
-     h3Tags[j].style.backgroundColor = "yellow";
-   }
- }
-`);
-});
+  ipcMain.on('execute-command-click', () => {
+    browserView.webContents.executeJavaScript(`
+      var h3Tags = document.getElementsByTagName("h3");
+      var hyperlinks = ['']; // Initialize with empty string to match div numbering
+  
+      for (var i = 0; i < h3Tags.length; i++) {
+        var div = document.createElement("div");
+        div.style.position = "absolute";
+        div.style.top = "0";
+        div.style.right = "0"; //place number in top right
+        div.style.backgroundColor = "red";
+        div.innerText = (i + 1).toString();
+        div.classList.add("numTag"); // Add your class name here
+        h3Tags[i].insertBefore(div, h3Tags[i].firstChild);
+        h3Tags[i].style.backgroundColor = "yellow";
+  
+        // Get hyperlink tied to h3 tag
+        var anchor = h3Tags[i].closest('a');
+        if (anchor) {
+          hyperlinks.push(anchor.href); // Store hyperlink in the array
+        }
+      }
+  
+      console.log(hyperlinks); // Log the contents of the array
+    `);
+  });
+  
+  ipcMain.on('goto-link', (event, query) => {
+    browserView.webContents.executeJavaScript(`
+      var num = ${query}; // Number received from the event
+      if (hyperlinks && Array.isArray(hyperlinks)) {
+        if (num >= 0 && num < hyperlinks.length) {
+          window.location.href = hyperlinks[num]; // Navigate to the corresponding link
+        } else {
+          console.error("Invalid number received or hyperlink not found for the given number.");
+        }
+      } else {
+        console.error("Hyperlinks array is not accessible or invalid.");
+      }
+    `);
+  });
 
 
 
@@ -89,18 +117,18 @@ ipcMain.on('execute-command-click', () => {
     `
   });
 
-  ipcMain.on('move-down', (event, query) => {
+  ipcMain.on('move-down', () => {
     browserView.webContents.executeJavaScript(
       `
       window.scrollTo({
-        top: window.scrollY + 120,
+        top: window.scrollY + 135,
         behavior: 'smooth'
       });
     `);
     // browserView.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ArrowDown' });
   });
 
-  ipcMain.on('move-bottom', (event, query) => {
+  ipcMain.on('move-bottom', () => {
     browserView.webContents.executeJavaScript(
       `
       window.scrollTo({
@@ -112,7 +140,7 @@ ipcMain.on('execute-command-click', () => {
   });
 
 
-  ipcMain.on('move-up', (event, query) => {
+  ipcMain.on('move-up', () => {
     browserView.webContents.executeJavaScript(
       `
       window.scrollTo({
@@ -124,7 +152,7 @@ ipcMain.on('execute-command-click', () => {
   });
 
 
-  ipcMain.on('move-top', (event, query) => {
+  ipcMain.on('move-top', () => {
     browserView.webContents.executeJavaScript(
       `
       window.scrollTo({

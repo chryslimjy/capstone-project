@@ -54,11 +54,25 @@
       console.log('Custom Event Received:', data);
     });
 
+    function checkNum(text) {
+    // Regular expression to match numbers in text form
+    return /^\d+(\.\d+)?$/.test(text);
+}
+
+
     //scripts for functions
     function executeCommand(text) {
 
       if (text == 'click') {
         ipcRenderer.send('execute-command-click');
+      }
+
+      else if (document.querySelector('.numTag') !== null) {
+        console.log("the numTag exists");
+        if(checkNum(text)){
+          ipcRenderer.send('goto-link');
+        }
+      
       }
 
       else if (text.includes('search') || text.includes('such')) {
