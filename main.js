@@ -22,18 +22,13 @@ function createWindow() {
   mainWindow.loadFile('index.html');
   mainWindow.webContents.openDevTools();
 
-  // Create a BrowserView
+
   browserView = new BrowserWindow({ webPreferences: { nodeIntegration: false } });
   mainWindow.setBrowserView(browserView);
   browserView.setBounds({ x: 0, y: 0, width: 800, height: 600 });
 
-  // Load the YouTube URL in the BrowserView
+  
   browserView.webContents.loadURL('https://www.google.com');
-
-  // Listen for the 'open-chrome' message from the renderer process
-  ipcMain.on('open-chrome', () => {
-    browserView.webContents.loadURL('https://www.youtube.com');
-  });
 
 
 
@@ -76,7 +71,7 @@ for (var i = 0; i < allLinks.length; i++) {
     if (browserView) {
       const searchEngineUrl = 'https://www.google.com/search?q=';
       const searchUrl = `${searchEngineUrl}${encodeURIComponent(query)}`;
-  
+
       browserView.webContents.loadURL(searchUrl);
     }
   });
@@ -99,7 +94,7 @@ for (var i = 0; i < allLinks.length; i++) {
   });
 
 
-  
+
 
   ipcMain.on('submit', () => {
 
@@ -121,7 +116,18 @@ for (var i = 0; i < allLinks.length; i++) {
         behavior: 'smooth'
       });
     `);
-   // browserView.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ArrowDown' });
+    // browserView.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ArrowDown' });
+  });
+
+  ipcMain.on('move-bottom', (event, query) => {
+    browserView.webContents.executeJavaScript(
+      `
+      window.scrollTo({
+        top: document.body.scrollHeight,
+          behavior: 'smooth'
+      });
+    `);
+    // browserView.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ArrowDown' });
   });
 
 
@@ -133,7 +139,19 @@ for (var i = 0; i < allLinks.length; i++) {
         behavior: 'smooth'
       });
     `);
-   // browserView.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ArrowDown' });
+    // browserView.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ArrowDown' });
+  });
+
+
+  ipcMain.on('move-top', (event, query) => {
+    browserView.webContents.executeJavaScript(
+      `
+      window.scrollTo({
+        top: 0,
+          behavior: 'smooth'
+      });
+    `);
+    // browserView.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ArrowDown' });
   });
 
 

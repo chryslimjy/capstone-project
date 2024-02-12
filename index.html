@@ -59,7 +59,7 @@
 
       if (text == 'click') {
         ipcRenderer.send('execute-command-click');
-        //need to highlight and assign number to each <a> tag
+        //need to highlight and assign number to each <h3> tag
 
         //accurately select the chosen <a> tag
 
@@ -85,6 +85,14 @@
 
       else if (text == 'up') {
         ipcRenderer.send('move-up');
+      }
+
+      else if (text == 'bottom') {
+        ipcRenderer.send('move-bottom');
+      }
+
+      else if (text == 'top') {
+        ipcRenderer.send('move-top');
       }
 
       else {
