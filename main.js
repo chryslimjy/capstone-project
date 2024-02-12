@@ -31,39 +31,20 @@ function createWindow() {
   browserView.webContents.loadURL('https://www.google.com');
 
 
+ipcMain.on('execute-command-click', () => {
 
+ browserView.webContents.executeJavaScript(
+  `
+  var aTags = document.getElementsByTagName("a");
+ for (var i = 0; i < aTags.length; i++) {
+   var h3Tags = aTags[i].getElementsByTagName("h3");
+   for (var j = 0; j < h3Tags.length; j++) {
+     h3Tags[j].style.backgroundColor = "yellow";
+   }
+ }
+`);
+});
 
-  // Listen for the 'execute-command' message from the renderer process
-  ipcMain.on('execute-command-click', () => {
-    // Execute the command in the current browser window (YouTube)
-    browserView.webContents.executeJavaScript(
-      `
-      var allLinks = document.getElementsByTagName("a");
-
-// Iterate through the anchor elements
-for (var i = 0; i < allLinks.length; i++) {
-  var currentLink = allLinks[i];
-
-  // Highlight the anchor tag (you can modify this part as needed)
-  currentLink.style.backgroundColor = "yellow";
-
-  // Create a text node with the position and append it to the anchor element
-  var positionText = document.createTextNode((i + 1));
-  var textBox = document.createElement("div");
-  textBox.style.position = "absolute";
-  textBox.style.left = "0";
-  textBox.style.top = "0";
-  textBox.style.background = "rgba(255, 255, 255, 0.7)";
-  textBox.style.padding = "5px";
-  textBox.appendChild(positionText);
-  currentLink.appendChild(textBox);
-
-  // Perform further actions, such as logging the clickable links
-  console.log("Clickable Link: ", currentLink.href);
-}
-
-    `);
-  });
 
 
   ipcMain.on('search-query', (event, query) => {
