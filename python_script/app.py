@@ -42,6 +42,7 @@ def recognize_speech():
             recognized_text = text[14:-3]
             print(recognized_text)
             socketio.emit('speech_recognition', {'text': recognized_text})
+            
             #socketio.emit('audio_data_received', {})  # Emit an event when audio data is received
 
 socketio.start_background_task(target=recognize_speech)

@@ -24,6 +24,10 @@
     // Connect to the Socket.IO server
     const socket = io('http://localhost:5000');
     const { ipcRenderer } = require('electron');
+    const { wordsToNumbers } = require('words-to-numbers');
+    
+
+    let tagExist = false;
 
     // Listen for the 'connect' event, indicating successful connection
     socket.on('connect', () => {
@@ -35,41 +39,67 @@
       console.log('Disconnected from the Socket.IO server. Reason:', reason);
     });
 
-    // Listen for the speech recognition event
+
+
+
+   
+
+    // Listen for voice recognition from python
     socket.on('speech_recognition', (data) => {
       const recognizedText = data.text;
       console.log('Recognized Text:', recognizedText);
 
-      executeCommand(recognizedText.toString())
+      //check if numtag exists. to be executed
+      if (tagExist == true) {
+      console.log('hello world. process number command');
+      //function to detect the number and pass over to electron
+      selectLink(recognizedText.toString());
+    }
 
-      console.log('Speech Recognition Event Received:', data);
+
+    //normal function
+      executeCommand(recognizedText.toString());
+
+
+
+      console.log('user said:', data);
     });
 
-   
+
+
+
+
+ 
+
+
+
+
     socket.on('custom_event', (data) => {
       console.log('Custom Event Received:', data);
     });
 
-    function checkNum(text) {
-    // Regular expression to match numbers in text form
-    return /^\d+(\.\d+)?$/.test(text);
-}
+
+    function selectLink(text) {
+      //convert number string to integer
+      const num = wordsToNumbers(text);
+      ipcRenderer.send('goto-link', num);
+
+    }
+
+
 
 
     //scripts for functions
     function executeCommand(text) {
 
+
+
       if (text == 'click') {
         ipcRenderer.send('execute-command-click');
+        tagExist = true;
       }
 
-      else if (document.querySelector('.numTag') !== null) {
-        console.log("the numTag exists");
-        if(checkNum(text)){
-          ipcRenderer.send('goto-link');
-        }
-      
-      }
+
 
       else if (text.includes('search') || text.includes('such')) {
         const searchQuery = text.substring('search'.length).trim();
