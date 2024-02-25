@@ -1,6 +1,19 @@
 search: perform a search query
-input: 'input' words into the search bar
+click: highlight the search results
 down: move the page down equivalent to an arrow down button press
 up: move the page down equivalent to an arrow up button press
 top: scroll to top
 bottom: scroll to botom
+
+
+input: 'input' words into the search bar
+
+
+TODO:
+launch service
+close service
+toggle mic
+
+show other visual: show if mic is on/off
+
+for solution to be depolyable, is necessary
