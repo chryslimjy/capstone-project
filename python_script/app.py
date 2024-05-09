@@ -4,9 +4,18 @@ from vosk import Model, KaldiRecognizer
 import pyaudio
 from flask import Flask, render_template
 from flask_socketio import SocketIO
+#NLP stuff
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins='*')  # Enable CORS for all origins
+
+# Initialize NLTK stopwords
+nltk.download('punkt')
+nltk.download('stopwords')
+stop_words = set(stopwords.words('english'))
 
 @app.route('/')
 def index():
@@ -43,7 +52,13 @@ def recognize_speech():
         if r.AcceptWaveform(data):
             text = r.Result()
             recognized_text = text[14:-3]
-            print(recognized_text)
+            print("Socket-IO Speech:", recognized_text)
+            tokens = word_tokenize(str(recognized_text))
+            # Remove stop words
+            tokens = [word for word in tokens if word.lower() not in stop_words]
+            # Perform intent classification
+            intent = classify_intent(tokens)
+            handle_intent(intent, tokens)
             socketio.emit('speech_recognition', {'text': recognized_text})
 
 # Update the socketio.on_event to handle events from the Node.js application
@@ -58,6 +73,41 @@ def handle_disconnect():
 # Start the Flask SocketIO server
 # if __name__ == '__main__':
 #     socketio.run(app, host='0.0.0.0', port=5000)  # Change host to allow connections from external sources
+
+#############################################################################
+##NLP IMPLEMENTATION###########################################################
+#############################################################################
+
+def classify_intent(tokens):
+    # Simple rule-based intent classification
+    if 'open' in tokens and 'website' in tokens:
+        return 'open_website'
+    elif 'search' in tokens and 'for' in tokens:
+        return 'web_search'
+    elif 'scroll' in tokens or 'refresh':
+        return 'action'
+    else:
+        return 'unknown'
+
+def handle_intent(intent, tokens):
+    if intent == 'open_website':
+        print("The intent is to open a website")
+        # website_index = tokens.index('website')
+        # website = tokens[website_index + 1]
+        # print(f"Opening website: {website}")
+
+        # Code to open the specified website
+        #add code to call socket to open website
+    elif intent == 'web_search':
+        print("The intent is to perform a search")
+        
+        # search_index = tokens.index('for')
+        # query = ' '.join(tokens[search_index + 1:])
+        # print(f"Searching for: {query}")
+        # Code to perform a web search
+    else:
+        print("Intent not recognized. Please try again")
+
 
 socketio.start_background_task(target=recognize_speech)
 
