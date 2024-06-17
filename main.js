@@ -1,8 +1,31 @@
-// import axios from 'axios';
-
 const { app, BrowserWindow, ipcMain } = require('electron');
+const { spawn } = require('child_process');
+const path = require('path');
 
-//const axios = require('axios');
+//const pythonMic = path.join(__dirname, 'python_script', 'app.py');
+//add comment for commit
+function runPythonScript() {
+  //const pythonProcess = spawn('python', ['python_script/app.py']);
+
+  const pythonScriptPath = path.join(__dirname, 'python_script', 'app.py');
+  const pythonProcess = spawn('python', [pythonScriptPath], { cwd: path.join(__dirname, 'python_script') });
+
+  // Handle output
+  pythonProcess.stdout.on('data', (data) => {
+    console.log(`Python stdout: ${data}`);
+  });
+
+  console.log("test");
+
+  pythonProcess.stderr.on('data', (data) => {
+    console.error(`Python stderr: ${data}`);
+  });
+
+  // Handle exit
+  pythonProcess.on('close', (code) => {
+    console.log(`Python process exited with code ${code}`);
+  });
+}
 
 let mainWindow;
 let browserView;
@@ -23,40 +46,17 @@ function createWindow() {
   mainWindow.webContents.openDevTools();
 
 
+
+
   browserView = new BrowserWindow({ webPreferences: { nodeIntegration: false } });
   mainWindow.setBrowserView(browserView);
   browserView.setBounds({ x: 0, y: 0, width: 800, height: 600 });
 
-  
+  //use google as default web browser
   browserView.webContents.loadURL('https://www.google.com');
 
 
-  ipcMain.on('execute-command-click', () => {
-    browserView.webContents.executeJavaScript(`
-      var h3Tags = document.getElementsByTagName("h3");
-      var hyperlinks = ['']; // Initialize with empty string to match div numbering
-  
-      for (var i = 0; i < h3Tags.length; i++) {
-        var div = document.createElement("div");
-        div.style.position = "absolute";
-        div.style.top = "0";
-        div.style.right = "0"; //place number in top right
-        div.style.backgroundColor = "red";
-        div.innerText = (i + 1).toString();
-        div.classList.add("numTag"); // Add your class name here
-        h3Tags[i].insertBefore(div, h3Tags[i].firstChild);
-        h3Tags[i].style.backgroundColor = "yellow";
-  
-        // Get hyperlink tied to h3 tag
-        var anchor = h3Tags[i].closest('a');
-        if (anchor) {
-          hyperlinks.push(anchor.href); // Store hyperlink in the array
-        }
-      }
-  
-      console.log(hyperlinks); // Log the contents of the array
-    `);
-  });
+
   
   ipcMain.on('goto-link', (event, query) => {
     browserView.webContents.executeJavaScript(`
@@ -170,7 +170,12 @@ function createWindow() {
   });
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  runPythonScript();
+  createWindow();
+  
+});
+
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

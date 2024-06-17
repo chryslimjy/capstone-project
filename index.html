@@ -9,25 +9,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Speech Recognition Example</title>
+  <title>NLP Web Browsing</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </head>
 
 <body>
 
-  <h4>Custom Command Input</h4>
-
-  <p>Command to update</p>
-  <p>New Custom command</p>
-
   <script>
     // Connect to the Socket.IO server
     const socket = io('http://localhost:5000');
     const { ipcRenderer } = require('electron');
-    const { wordsToNumbers } = require('words-to-numbers');
-    
-
-    let tagExist = false;
 
     // Listen for the 'connect' event, indicating successful connection
     socket.on('connect', () => {
@@ -41,50 +32,43 @@
 
 
 
+    socket.on('intent-open-website', (data) => {
+      const openWebsite = data.text;
+      //if it comes here, the intent is to open a common webpage
+      console.log('Recognized Text:', openWebsite)
 
-   
-
-    // Listen for voice recognition from python
-    socket.on('speech_recognition', (data) => {
-      const recognizedText = data.text;
-      console.log('Recognized Text:', recognizedText);
-
-      //check if numtag exists. to be executed
-      if (tagExist == true) {
-      console.log('hello world. process number command');
-      //function to detect the number and pass over to electron
-      selectLink(recognizedText.toString());
-    }
-
-
-    //normal function
-      executeCommand(recognizedText.toString());
-
-
+      ipcRenderer.send('open-common-website', openWebsite);
 
       console.log('user said:', data);
     });
 
+    socket.on('intent-search-query', (data) => {
+      var searchQuery = data.text;
+      if (searchQuery.includes('search') || searchQuery.includes('such')) {
+        searchQuery = searchQuery.substring('search'.length).trim();
+        ipcRenderer.send('search-query', searchQuery)
+      }
 
-
-
-
- 
-
-
-
-
-    socket.on('custom_event', (data) => {
-      console.log('Custom Event Received:', data);
+      console.log('the recognized search intent is:', searchQuery);
     });
 
+//test stuff
+    // ADD FUNCTION FOR THIS
+    //if it comes here, the intent is to perform a search query
+      //insert code here to scrape page for the returned results
+      //store scraped results in array
+      //normal function
 
+
+      //
     function selectLink(text) {
       //convert number string to integer
       const num = wordsToNumbers(text);
       ipcRenderer.send('goto-link', num);
 
     }
+
+
 
 
 
@@ -101,10 +85,7 @@
 
 
 
-      else if (text.includes('search') || text.includes('such')) {
-        const searchQuery = text.substring('search'.length).trim();
-        ipcRenderer.send('search-query', searchQuery)
-      }
+     
 
       else if (text.includes('input')) {
         const searchBar = text.substring('input'.length).trim();
@@ -130,7 +111,7 @@
         ipcRenderer.send('move-top');
       }
 
-      
+
 
       else {
         console.log('command not recognised');
