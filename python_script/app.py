@@ -43,8 +43,26 @@ if mic_index is None:
     exit()
 
 mic = pyaudio.PyAudio()
-stream = mic.open(format=pyaudio.paInt16, channels=1, rate=48000, input=True, input_device_index=mic_index, frames_per_buffer=8192)
+stream = mic.open(format=pyaudio.paInt16, channels=1, rate=48000, input=True, input_device_index=mic_index, frames_per_buffer=2048)
 stream.start_stream()
+
+#dictonary of common misrecognised words
+misrecognitions = {
+    "such": "search",
+    "screw": "scroll",
+}
+
+# Function to correct misrecognized words
+def correct_misrecognized_words(tokens, misrecognitions):
+    corrected_tokens = []
+    for token in tokens:
+        if token.lower() in misrecognitions:
+            corrected_tokens.append(misrecognitions[token.lower()])
+        else:
+            corrected_tokens.append(token)
+    return corrected_tokens
+
+
 
 def recognize_speech():
     while True:
@@ -52,14 +70,22 @@ def recognize_speech():
         if r.AcceptWaveform(data):
             text = r.Result()
             recognized_text = text[14:-3]
-            print("Socket-IO Speech:", recognized_text)
+            print("Speech detected:", recognized_text)
             tokens = word_tokenize(str(recognized_text))
+            #process recognized_text correction
+            tokens = correct_misrecognized_words(tokens, misrecognitions)
+            ###############################
             # Remove stop words
             tokens = [word for word in tokens if word.lower() not in stop_words]
+            print("Tokens list:", tokens)
             # Perform intent classification
             intent = classify_intent(tokens)
-            handle_intent(intent, tokens)
-            socketio.emit('speech_recognition', {'text': recognized_text})
+
+            #handle intent and emit to socket io based on intent sent over
+            #the front end will execute based on intent
+            handle_intent(intent, recognized_text)
+
+            #socketio.emit('speech_recognition', {'text': recognized_text})
 
 # Update the socketio.on_event to handle events from the Node.js application
 @socketio.on('connect')
@@ -74,39 +100,64 @@ def handle_disconnect():
 # if __name__ == '__main__':
 #     socketio.run(app, host='0.0.0.0', port=5000)  # Change host to allow connections from external sources
 
+###to declare functions
+def check_tokens_for_common_websites(tokens):
+    action_words = ["facebook", "youtube", "instagram"]
+    for token in tokens:
+        if token.lower() in action_words:
+            return True
+    return False
+
+def check_tokens_for_search_commands(tokens):
+    action_words = ["search", "google", "such"]
+    for token in tokens:
+        if token.lower() in action_words:
+            return True
+    return False
+
+def check_tokens_for_commands(tokens):
+    action_words = ["scroll", "scroll", "next", "refresh","previous","back"]
+    for token in tokens:
+        if token.lower() in action_words:
+            return True
+    return False
+
+
+
+############################
+
 #############################################################################
 ##NLP IMPLEMENTATION###########################################################
 #############################################################################
 
-def classify_intent(tokens):
+def classify_intent(tokens):  #(improve this)
     # Simple rule-based intent classification
-    if 'open' in tokens and 'website' in tokens:
+    if check_tokens_for_common_websites(tokens):
         return 'open_website'
-    elif 'search' in tokens and 'for' in tokens:
+    elif check_tokens_for_search_commands(tokens):
         return 'web_search'
-    elif 'scroll' in tokens or 'refresh':
+    elif check_tokens_for_commands(tokens):
         return 'action'
     else:
         return 'unknown'
 
-def handle_intent(intent, tokens):
+#pass intent over to web
+def handle_intent(intent, recognized_text): #tokens
     if intent == 'open_website':
+        print(recognized_text)
         print("The intent is to open a website")
-        # website_index = tokens.index('website')
-        # website = tokens[website_index + 1]
-        # print(f"Opening website: {website}")
-
-        # Code to open the specified website
-        #add code to call socket to open website
+        socketio.emit('intent-open-website', {'text': recognized_text})
+        
     elif intent == 'web_search':
         print("The intent is to perform a search")
-        
-        # search_index = tokens.index('for')
-        # query = ' '.join(tokens[search_index + 1:])
-        # print(f"Searching for: {query}")
-        # Code to perform a web search
+        socketio.emit('intent-search-query', {'text': recognized_text})
+    
+    elif intent =='action':
+        print("The intent is to carry out action commands")
+        socketio.emit('intent-search-query', {'text': recognized_text})
     else:
         print("Intent not recognized. Please try again")
+        socketio.emit('intent-error-msg', {'text': recognized_text})
 
 
 socketio.start_background_task(target=recognize_speech)
