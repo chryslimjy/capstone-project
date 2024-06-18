@@ -143,21 +143,29 @@ function createWindow() {
     `);
   });
 
+  ipcMain.on('search-result', (event, query) => {
+    browserView.webContents.executeJavaScript(
+      `
+      // Filter results based on query
+      const queryWords = ${JSON.stringify(query)}; // Convert query array to JSON string
+      const matchedResults = resultsArray.filter(searchResult => {
+        return queryWords.some(word =>
+          searchResult.title.toLowerCase().includes(word.toLowerCase()) ||
+          searchResult.domain.toLowerCase().includes(word.toLowerCase())
+        );
+      });
 
+      // Extract URLs from matchedResults
+      const matchedUrls = matchedResults.map(result => result.URL);
+      window.location.href = matchedUrls;
+    `);
 
-
-
-  ipcMain.on('submit', () => {
-
-    `
-    // Select the input field (modify the selector based on your HTML structure)
-    var inputField = document.querySelector('input[type="text"]');
-    
-    if (inputField !=='') {
-      inputField.form.submit();
-    }
-    `
   });
+
+
+
+
+
 
   // ipcMain.on('move-down', () => {
   //   browserView.webContents.executeJavaScript(
@@ -170,27 +178,8 @@ function createWindow() {
   //   // browserView.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ArrowDown' });
   // });
 
-  ipcMain.on('move-bottom', () => {
-    browserView.webContents.executeJavaScript(
-      `
-      window.scrollTo({
-        top: document.body.scrollHeight,
-          behavior: 'smooth'
-      });
-    `);
-    // browserView.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ArrowDown' });
-  });
 
-  // ipcMain.on('move-up', () => {
-  //   browserView.webContents.executeJavaScript(
-  //     `
-  //     window.scrollTo({
-  //       top: window.scrollY - 120,
-  //       behavior: 'smooth'
-  //     });
-  //   `);
-  //   // browserView.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ArrowDown' });
-  // });
+
 
   ipcMain.on('move-top', () => {
     browserView.webContents.executeJavaScript(

@@ -115,6 +115,13 @@ def check_tokens_for_search_commands(tokens):
             return True
     return False
 
+def check_tokens_for_open_search_results(tokens):
+    action_words = ["open","click"]
+    for token in tokens:
+        if token.lower() in action_words:
+            return True
+    return False
+
 def check_tokens_for_commands(tokens):
     action_words = ["scroll", "scroll", "next", "refresh","previous","back"]
     for token in tokens:
@@ -140,6 +147,8 @@ def classify_intent(tokens):  #(improve this)
         return 'web_search'
     elif check_tokens_for_commands(tokens):
         return 'action'
+    elif check_tokens_for_open_search_results(tokens):
+        return 'open_search_result'
     else:
         return 'unknown'
 
@@ -153,6 +162,11 @@ def handle_intent(intent, recognized_text): #tokens
     elif intent == 'web_search':
         print("The intent is to perform a search")
         socketio.emit('intent-search-query', {'text': recognized_text})
+
+    elif intent == 'open_search_result':
+        tokens = word_tokenize(str(recognized_text))
+        print("The intent is to open a search result")
+        socketio.emit('intent-open-search-result', {'text': tokens})
     
     elif intent =='action':
         print("The intent is to carry out action commands")

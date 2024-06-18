@@ -46,10 +46,9 @@
 
 
 
-
+      //if it comes here, the intent is to open a common webpage
     socket.on('intent-open-website', (data) => {
       const openWebsite = data.text;
-      //if it comes here, the intent is to open a common webpage
       console.log('Recognized Text:', openWebsite)
 
       ipcRenderer.send('open-common-website', openWebsite);
@@ -69,19 +68,7 @@
       }
     });
 
-   
-
-   
-
-    //test stuff
-    // ADD FUNCTION FOR THIS
-    //if it comes here, the intent is to perform a search query
-    //insert code here to scrape page for the returned results
-    //store scraped results in array
-    //normal function
-
-
-    //
+    
     function getLink() {
       
       console.log('check if isSearch is came into function:', isSearch);
@@ -90,31 +77,17 @@
     }
 
 
+    //for this one, receive and pass array of tokens
+    socket.on('intent-open-search-result', (data) => {
+      var searchResult = data.text;
+      console.log("Received search result array:", searchResult);
+      if(isSearch == true){
+        ipcRenderer.send('search-result', searchResult)
+      }
+      
+    });
 
-
-
-
-
-
-    //scripts for functions
-    // function executeCommand(text) {
-
-
-
-    //   if (text == 'click') {
-    //     ipcRenderer.send('execute-command-click');
-    //     tagExist = true;
-    //   }
-
-
-    //   else {
-    //     console.log('command not recognised');
-    //   }
-
-    // }
-
-
-
+  
 
   </script>
 </body>
