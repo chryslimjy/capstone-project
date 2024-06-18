@@ -129,7 +129,9 @@ def check_tokens_for_commands(tokens):
 #############################################################################
 ##NLP IMPLEMENTATION###########################################################
 #############################################################################
-# https://demo.deeppavlov.ai/#/examples/token_ner
+
+
+
 def classify_intent(tokens):  #(improve this)
     # Simple rule-based intent classification
     if check_tokens_for_common_websites(tokens):

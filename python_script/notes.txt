@@ -4,23 +4,5 @@ scroll up/down
 next page
 refresh
 
-
-Python stderr: Exception in thread Thread-1 (recognize_speech):
-Traceback (most recent call last):
-  File "C:\Users\Chrystal Lim\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1073, in _bootstrap_inner
-
-Python stderr:     self.run()
-
-Python stderr:   File "C:\Users\Chrystal Lim\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1010, in run
-    self._target(*self._args, **self._kwargs)
-  File "C:\SiT\Capstone\Capstone-Project\capstone-project\python_script\app.py", line 51, in recognize_speech
-
-Python stderr:     data = stream.read(4096)
-
-Python stderr:            ^^^^^^^^^^^^^^^^^
-  File "C:\Users\Chrystal Lim\AppData\Local\Programs\Python\Python312\Lib\site-packages\pyaudio\__init__.py", line 570, in read
-
-Python stderr:     return pa.read_stream(self._stream, num_frames,
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Python stderr: OSError: [Errno -9981] Input overflowed
+https://demo.deeppavlov.ai/#/examples/token_ner
+https://docs.bird.com/applications/ai-features/ai/quickstarts/build-a-detect-intent-model

@@ -13,12 +13,19 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </head>
 
+
+
 <body>
 
   <script>
     // Connect to the Socket.IO server
     const socket = io('http://localhost:5000');
     const { ipcRenderer } = require('electron');
+
+    let isSearch = false; // take 0 as false
+    const resultsArray = [];
+
+
 
     // Listen for the 'connect' event, indicating successful connection
     socket.on('connect', () => {
@@ -53,27 +60,36 @@
     socket.on('intent-search-query', (data) => {
       var searchQuery = data.text;
       if (searchQuery.includes('search') || searchQuery.includes('such')) {
-        searchQuery = searchQuery.substring('search'.length-1).trim();
+        searchQuery = searchQuery.substring('search'.length - 1).trim();
         ipcRenderer.send('search-query', searchQuery)
+        isSearch = true;
       }
-
-      console.log('the recognized search intent is:', searchQuery);
+      if(isSearch == true){
+        getLink();
+      }
     });
 
-//test stuff
-    // ADD FUNCTION FOR THIS
-    //if it comes here, the intent is to perform a search query
-      //insert code here to scrape page for the returned results
-      //store scraped results in array
-      //normal function
-
-
-      //
-    function getLink() {
-      //get the following data: domain/title/url
    
 
+   
+
+    //test stuff
+    // ADD FUNCTION FOR THIS
+    //if it comes here, the intent is to perform a search query
+    //insert code here to scrape page for the returned results
+    //store scraped results in array
+    //normal function
+
+
+    //
+    function getLink() {
+      
+      console.log('check if isSearch is came into function:', isSearch);
+      ipcRenderer.send('obtain-link')
+    
     }
+
+
 
 
 
@@ -81,50 +97,21 @@
 
 
     //scripts for functions
-    function executeCommand(text) {
+    // function executeCommand(text) {
 
 
 
-      if (text == 'click') {
-        ipcRenderer.send('execute-command-click');
-        tagExist = true;
-      }
+    //   if (text == 'click') {
+    //     ipcRenderer.send('execute-command-click');
+    //     tagExist = true;
+    //   }
 
 
+    //   else {
+    //     console.log('command not recognised');
+    //   }
 
-     
-
-      // else if (text.includes('input')) {
-      //   const searchBar = text.substring('input'.length).trim();
-      //   ipcRenderer.send('search-bar', searchBar);
-
-      // } else if (text == 'submit') {
-      //   ipcRenderer.send('submit');
-      // }
-
-      // else if (text == 'down') {
-      //   ipcRenderer.send('move-down');
-      // }
-
-      // else if (text == 'up') {
-      //   ipcRenderer.send('move-up');
-      // }
-
-      // else if (text == 'bottom') {
-      //   ipcRenderer.send('move-bottom');
-      // }
-
-      // else if (text == 'top') {
-      //   ipcRenderer.send('move-top');
-      // }
-
-
-
-      else {
-        console.log('command not recognised');
-      }
-
-    }
+    // }
 
 
 
