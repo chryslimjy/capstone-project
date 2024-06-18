@@ -31,6 +31,14 @@
     });
 
 
+    socket.on('intent-browser-command', (data) => {
+      var browserCommand = data.text;
+      ipcRenderer.send('browser-command', browserCommand)
+      console.log('command said:', browserCommand);
+    });
+
+
+
 
     socket.on('intent-open-website', (data) => {
       const openWebsite = data.text;
@@ -45,7 +53,7 @@
     socket.on('intent-search-query', (data) => {
       var searchQuery = data.text;
       if (searchQuery.includes('search') || searchQuery.includes('such')) {
-        searchQuery = searchQuery.substring('search'.length).trim();
+        searchQuery = searchQuery.substring('search'.length-1).trim();
         ipcRenderer.send('search-query', searchQuery)
       }
 
@@ -61,10 +69,9 @@
 
 
       //
-    function selectLink(text) {
-      //convert number string to integer
-      const num = wordsToNumbers(text);
-      ipcRenderer.send('goto-link', num);
+    function getLink() {
+      //get the following data: domain/title/url
+   
 
     }
 
@@ -87,29 +94,29 @@
 
      
 
-      else if (text.includes('input')) {
-        const searchBar = text.substring('input'.length).trim();
-        ipcRenderer.send('search-bar', searchBar);
+      // else if (text.includes('input')) {
+      //   const searchBar = text.substring('input'.length).trim();
+      //   ipcRenderer.send('search-bar', searchBar);
 
-      } else if (text == 'submit') {
-        ipcRenderer.send('submit');
-      }
+      // } else if (text == 'submit') {
+      //   ipcRenderer.send('submit');
+      // }
 
-      else if (text == 'down') {
-        ipcRenderer.send('move-down');
-      }
+      // else if (text == 'down') {
+      //   ipcRenderer.send('move-down');
+      // }
 
-      else if (text == 'up') {
-        ipcRenderer.send('move-up');
-      }
+      // else if (text == 'up') {
+      //   ipcRenderer.send('move-up');
+      // }
 
-      else if (text == 'bottom') {
-        ipcRenderer.send('move-bottom');
-      }
+      // else if (text == 'bottom') {
+      //   ipcRenderer.send('move-bottom');
+      // }
 
-      else if (text == 'top') {
-        ipcRenderer.send('move-top');
-      }
+      // else if (text == 'top') {
+      //   ipcRenderer.send('move-top');
+      // }
 
 
 

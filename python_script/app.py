@@ -129,7 +129,7 @@ def check_tokens_for_commands(tokens):
 #############################################################################
 ##NLP IMPLEMENTATION###########################################################
 #############################################################################
-
+# https://demo.deeppavlov.ai/#/examples/token_ner
 def classify_intent(tokens):  #(improve this)
     # Simple rule-based intent classification
     if check_tokens_for_common_websites(tokens):
@@ -154,7 +154,7 @@ def handle_intent(intent, recognized_text): #tokens
     
     elif intent =='action':
         print("The intent is to carry out action commands")
-        socketio.emit('intent-search-query', {'text': recognized_text})
+        socketio.emit('intent-browser-command', {'text': recognized_text})
     else:
         print("Intent not recognized. Please try again")
         socketio.emit('intent-error-msg', {'text': recognized_text})

@@ -47,7 +47,6 @@ function createWindow() {
 
 
 
-
   browserView = new BrowserWindow({ webPreferences: { nodeIntegration: false } });
   mainWindow.setBrowserView(browserView);
   browserView.setBounds({ x: 0, y: 0, width: 800, height: 600 });
@@ -55,9 +54,40 @@ function createWindow() {
   //use google as default web browser
   browserView.webContents.loadURL('https://www.google.com');
 
+  ipcMain.on('search-query', (event, query) => {
+    // Assuming browserView is your BrowserView instance
+    if (browserView) {
+      const searchEngineUrl = 'https://www.google.com/search?q=';
+      const searchUrl = `${searchEngineUrl}${encodeURIComponent(query)}`;
 
+      browserView.webContents.loadURL(searchUrl);
+    }
+  });
 
   
+  ipcMain.on('browser-command', (event, query) => {
+    // Assuming browserView is your BrowserView instance
+    var command = query;
+    if (command.includes("up")){
+      browserView.webContents.executeJavaScript(
+        `
+        window.scrollTo({
+          top: window.scrollY - 120,
+          behavior: 'smooth'
+        });
+      `);
+    }else if (command.includes("down")){
+      browserView.webContents.executeJavaScript(
+        `
+        window.scrollTo({
+        top: window.scrollY + 135,
+        behavior: 'smooth'
+      });
+      `);
+    }
+    
+  });
+
   ipcMain.on('goto-link', (event, query) => {
     browserView.webContents.executeJavaScript(`
       var num = ${query}; // Number received from the event
@@ -72,20 +102,6 @@ function createWindow() {
       }
     `);
   });
-
-
-
-  ipcMain.on('search-query', (event, query) => {
-    // Assuming browserView is your BrowserView instance
-    if (browserView) {
-      const searchEngineUrl = 'https://www.google.com/search?q=';
-      const searchUrl = `${searchEngineUrl}${encodeURIComponent(query)}`;
-
-      browserView.webContents.loadURL(searchUrl);
-    }
-  });
-
-
 
   ipcMain.on('search-bar', (event, query) => {
     browserView.webContents.executeJavaScript(
@@ -104,7 +120,6 @@ function createWindow() {
 
 
 
-
   ipcMain.on('submit', () => {
 
     `
@@ -117,16 +132,16 @@ function createWindow() {
     `
   });
 
-  ipcMain.on('move-down', () => {
-    browserView.webContents.executeJavaScript(
-      `
-      window.scrollTo({
-        top: window.scrollY + 135,
-        behavior: 'smooth'
-      });
-    `);
-    // browserView.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ArrowDown' });
-  });
+  // ipcMain.on('move-down', () => {
+  //   browserView.webContents.executeJavaScript(
+  //     `
+  //     window.scrollTo({
+  //       top: window.scrollY + 135,
+  //       behavior: 'smooth'
+  //     });
+  //   `);
+  //   // browserView.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ArrowDown' });
+  // });
 
   ipcMain.on('move-bottom', () => {
     browserView.webContents.executeJavaScript(
@@ -139,18 +154,16 @@ function createWindow() {
     // browserView.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ArrowDown' });
   });
 
-
-  ipcMain.on('move-up', () => {
-    browserView.webContents.executeJavaScript(
-      `
-      window.scrollTo({
-        top: window.scrollY - 120,
-        behavior: 'smooth'
-      });
-    `);
-    // browserView.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ArrowDown' });
-  });
-
+  // ipcMain.on('move-up', () => {
+  //   browserView.webContents.executeJavaScript(
+  //     `
+  //     window.scrollTo({
+  //       top: window.scrollY - 120,
+  //       behavior: 'smooth'
+  //     });
+  //   `);
+  //   // browserView.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ArrowDown' });
+  // });
 
   ipcMain.on('move-top', () => {
     browserView.webContents.executeJavaScript(
@@ -163,7 +176,6 @@ function createWindow() {
     // browserView.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ArrowDown' });
   });
 
-
   mainWindow.on('closed', () => {
     mainWindow = null;
     browserView = null;
@@ -175,7 +187,6 @@ app.whenReady().then(() => {
   createWindow();
   
 });
-
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
