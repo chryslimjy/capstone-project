@@ -85,6 +85,19 @@ function createWindow() {
       });
       `);
     }
+    else if (command.includes("refresh")){
+      browserView.webContents.executeJavaScript(
+        `
+        location.reload();  
+      `);
+    }
+
+    else if (command.includes("back")){
+      browserView.webContents.executeJavaScript(
+        `
+        history.back(); 
+      `);
+    }
     
   });
 
