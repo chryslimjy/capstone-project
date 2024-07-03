@@ -172,43 +172,7 @@ function createWindow() {
 
 
 
-  // ipcMain.on('obtain-link', () => {
-  //   browserView.webContents.executeJavaScript(`
-  //     var resultsArray = [];
-  //     //get the following data: domain/title/url
-  //     console.log("did it reach electron");
-  //     const searchItems = document.querySelectorAll('span[jscontroller="msmzHf"]');
 
-  //     // Iterate over each search result item
-  //     searchItems.forEach(item => {
-  //       // Extract the domain
-  //       const domainElement = item.querySelector('.VuuXrf');
-  //       const domain = domainElement ? domainElement.textContent : '';
-
-  //       // Extract the title
-  //       const titleElement = item.querySelector('h3');
-  //       const title = titleElement ? titleElement.textContent : '';
-
-  //       // Extract the URL
-  //       const linkElement = item.querySelector('a');
-  //       const url = linkElement ? linkElement.href : '';
-
-  //       // Create the searchResult object
-  //       const searchResult = {
-  //         domain: domain,
-  //         title: title,
-  //         URL: url
-  //       };
-
-  //       // Push the result into the array
-  //       resultsArray.push(searchResult);
-  //     });
-
-  //     // Log the results array to the console
-  //     console.log(resultsArray);
-
-  //   `);
-  // });
 
   ipcMain.on('search-result', (event, query) => {
     browserView.webContents.executeJavaScript(

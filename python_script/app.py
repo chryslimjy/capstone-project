@@ -8,6 +8,7 @@ from flask_socketio import SocketIO
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
+import re
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins='*')  
@@ -132,8 +133,29 @@ def check_tokens_for_commands(tokens):
     return False
 
 
-
 ############################
+############################
+def remove_search_phrases(text):
+    # Define the phrases to be removed
+    phrases_to_remove = ['search for', 'i want to search for']
+    
+    # Tokenize the input string
+    tokens = text.split()
+    
+    # Join tokens to form the string
+    tokenized_text = ' '.join(tokens)
+    
+    # Remove the phrases from the tokenized text
+    for phrase in phrases_to_remove:
+        tokenized_text = re.sub(r'\b' + re.escape(phrase) + r'\b', '', tokenized_text, flags=re.IGNORECASE)
+    
+    # Tokenize again to remove any extra spaces
+    cleaned_tokens = tokenized_text.split()
+    cleaned_sentence = ' '.join(cleaned_tokens)
+    
+    return cleaned_sentence
+    
+
 
 #############################################################################
 ##NLP IMPLEMENTATION###########################################################
@@ -145,9 +167,6 @@ def classify_intent(tokens):  #(improve this)
     # Simple rule-based intent classification
     if check_tokens_for_search_commands(tokens):
         return 'web_search'
-    #elif check_tokens_for_common_websites(tokens):
-        return 'web_search'
-        #return 'open_website'
     elif check_tokens_for_commands(tokens):
         return 'action'
     elif check_tokens_for_open_search_results(tokens):
@@ -157,19 +176,16 @@ def classify_intent(tokens):  #(improve this)
 
 #pass intent over to web
 def handle_intent(intent, recognized_text): #tokens
-    if intent == 'open_website':
-        print(recognized_text)
-        print("The intent is to open a website")
-        socketio.emit('intent-open-website', {'text': recognized_text})
-        
-    elif intent == 'web_search':
+    if intent == 'web_search':
+        cleaned_tokens = remove_search_phrases(recognized_text)
+        print(cleaned_tokens) 
         print("The intent is to perform a search")
-        socketio.emit('intent-search-query', {'text': recognized_text})
+        socketio.emit('intent-search-query', {'text': cleaned_tokens})
 
     elif intent == 'open_search_result':
         tokens = word_tokenize(str(recognized_text))
         print("The intent is to open a search result")
-        socketio.emit('intent-open-search-result', {'text': tokens})
+        socketio.emit('intent-open-search-result', {'text': recognized_text})
     
     elif intent =='action':
         print("The intent is to carry out action commands")

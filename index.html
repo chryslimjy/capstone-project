@@ -54,11 +54,8 @@
   
     socket.on('intent-search-query', (data) => {
       var searchQuery = data.text;
-      if (searchQuery.includes('search') || searchQuery.includes('such')) {
-        searchQuery = searchQuery.substring('search'.length - 1).trim();
-        ipcRenderer.send('search-query', searchQuery);
+      ipcRenderer.send('search-query', searchQuery);
 
-      }
     });
   
     // function getLink() {
