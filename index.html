@@ -1,6 +1,3 @@
-<!-- index.html -->
-
-<!-- commit before proceeding-->
 
 <!--test-->
 <!DOCTYPE html>
@@ -11,6 +8,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NLP Web Browsing</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
+
 </head>
 
 
@@ -22,74 +21,66 @@
     const socket = io('http://localhost:5000');
     const { ipcRenderer } = require('electron');
 
-    let isSearch = false; // take 0 as false
-    const resultsArray = [];
-
-
-
+  
+    // Function to update the div
+    function updateDiv(message) {
+      const receivedTextDiv = document.getElementById('received-text');
+      receivedTextDiv.innerHTML = message;
+    }
+  
     // Listen for the 'connect' event, indicating successful connection
     socket.on('connect', () => {
-      console.log('Connected to the Socket.IO server');
+      updateDiv('Connected to the Socket.IO server');
     });
-
+  
     // Listen for the 'disconnect' event, indicating a disconnection
     socket.on('disconnect', (reason) => {
-      console.log('Disconnected from the Socket.IO server. Reason:', reason);
+      updateDiv('Disconnected from the Socket.IO server. Reason: ' + reason);
     });
-
-
+  
     socket.on('intent-browser-command', (data) => {
       var browserCommand = data.text;
-      ipcRenderer.send('browser-command', browserCommand)
-      console.log('command said:', browserCommand);
+      ipcRenderer.send('browser-command', browserCommand);
+      updateDiv('Command said: ' + browserCommand);
     });
-
-
-
-      //if it comes here, the intent is to open a common webpage
+  
+    // If it comes here, the intent is to open a common webpage
     socket.on('intent-open-website', (data) => {
       const openWebsite = data.text;
-      console.log('Recognized Text:', openWebsite)
-
+      updateDiv('Recognized Text: ' + openWebsite);
       ipcRenderer.send('open-common-website', openWebsite);
-
-      console.log('user said:', data);
+      updateDiv('User said: ' + JSON.stringify(data));
     });
-
+  
     socket.on('intent-search-query', (data) => {
       var searchQuery = data.text;
       if (searchQuery.includes('search') || searchQuery.includes('such')) {
         searchQuery = searchQuery.substring('search'.length - 1).trim();
-        ipcRenderer.send('search-query', searchQuery)
-        isSearch = true;
-      }
-      if(isSearch == true){
-        getLink();
+        ipcRenderer.send('search-query', searchQuery);
+
       }
     });
-
-    
-    function getLink() {
-      
-      console.log('check if isSearch is came into function:', isSearch);
-      ipcRenderer.send('obtain-link')
-    
-    }
-
-
-    //for this one, receive and pass array of tokens
+  
+    // function getLink() {
+    //   updateDiv('Check if isSearch is came into function: ' + isSearch);
+    //   ipcRenderer.send('obtain-link');
+    // }
+  
+    // For this one, receive and pass array of tokens
     socket.on('intent-open-search-result', (data) => {
       var searchResult = data.text;
-      console.log("Received search result array:", searchResult);
-      if(isSearch == true){
-        ipcRenderer.send('search-result', searchResult)
-      }
-      
+      updateDiv('Received search result array: ' + JSON.stringify(searchResult));
+
+     ipcRenderer.send('search-result', searchResult);
+
     });
-
   
-
   </script>
+  <div>
+
+  </div>
+
+  <div id="received-text"></div>
 </body>
 
 </html>

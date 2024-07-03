@@ -10,7 +10,7 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins='*')  # Enable CORS for all origins
+socketio = SocketIO(app, cors_allowed_origins='*')  
 
 # Initialize NLTK stopwords
 nltk.download('punkt')
@@ -49,7 +49,9 @@ stream.start_stream()
 #dictonary of common misrecognised words
 misrecognitions = {
     "such": "search",
+    "dutch": "search",
     "screw": "scroll",
+    "search": "search"
 }
 
 # Function to correct misrecognized words
@@ -101,15 +103,15 @@ def handle_disconnect():
 #     socketio.run(app, host='0.0.0.0', port=5000)  # Change host to allow connections from external sources
 
 ###to declare functions
-def check_tokens_for_common_websites(tokens):
-    action_words = ["facebook", "youtube", "instagram"]
-    for token in tokens:
-        if token.lower() in action_words:
-            return True
-    return False
+# def check_tokens_for_common_websites(tokens):
+#     action_words = ["facebook", "youtube", "instagram"]
+#     for token in tokens:
+#         if token.lower() in action_words:
+#             return True
+#     return False
 
 def check_tokens_for_search_commands(tokens):
-    action_words = ["search", "google", "such"]
+    action_words = ["search", "google"]
     for token in tokens:
         if token.lower() in action_words:
             return True
@@ -141,10 +143,11 @@ def check_tokens_for_commands(tokens):
 
 def classify_intent(tokens):  #(improve this)
     # Simple rule-based intent classification
-    if check_tokens_for_common_websites(tokens):
-        return 'open_website'
-    elif check_tokens_for_search_commands(tokens):
+    if check_tokens_for_search_commands(tokens):
         return 'web_search'
+    #elif check_tokens_for_common_websites(tokens):
+        return 'web_search'
+        #return 'open_website'
     elif check_tokens_for_commands(tokens):
         return 'action'
     elif check_tokens_for_open_search_results(tokens):

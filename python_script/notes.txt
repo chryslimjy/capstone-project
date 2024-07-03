@@ -6,3 +6,5 @@ refresh
 
 https://demo.deeppavlov.ai/#/examples/token_ner
 https://docs.bird.com/applications/ai-features/ai/quickstarts/build-a-detect-intent-model
+
+https://www.kaggle.com/code/gsri30/bert-for-intent-classification-3/notebook

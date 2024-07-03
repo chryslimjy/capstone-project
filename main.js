@@ -64,6 +64,62 @@ function createWindow() {
     }
   });
 
+  browserView.webContents.on('did-navigate', (event, url) => {
+    isSearch = url.includes('google.com/search');
+    if (isSearch) {
+      console.log('Navigated to a Google search result page.');
+      // Execute the code when on a search result page
+      browserView.webContents.executeJavaScript(`
+        var resultsArray = [];
+        //get the following data: domain/title/url
+        console.log("did it reach electron");
+        const searchItems = document.querySelectorAll('span[jscontroller="msmzHf"]');
+
+        // Iterate over each search result item
+        searchItems.forEach(item => {
+          // Extract the domain
+          const domainElement = item.querySelector('.VuuXrf');
+          const domain = domainElement ? domainElement.textContent : '';
+
+          // Extract the title
+          const titleElement = item.querySelector('h3');
+          const title = titleElement ? titleElement.textContent : '';
+
+          // Extract the URL
+          const linkElement = item.querySelector('a');
+          const url = linkElement ? linkElement.href : '';
+
+          // Create the searchResult object
+          const searchResult = {
+            domain: domain,
+            title: title,
+            URL: url
+          };
+
+          // Push the result into the array
+          resultsArray.push(searchResult);
+        });
+
+        // Log the results array to the console
+        console.log(resultsArray);
+
+      `);
+    } else {
+      console.log('Not on a Google search result page.');
+    }
+  });
+
+  // Set isSearch to false when navigating away from any page
+  browserView.webContents.on('did-navigate-in-page', (event, url) => {
+    if (!url.includes('google.com/search')) {
+      isSearch = false;
+      console.log('Navigated away from a Google search result page.');
+    }
+  });
+
+
+
+
   
   ipcMain.on('browser-command', (event, query) => {
     // Assuming browserView is your BrowserView instance
@@ -110,51 +166,49 @@ function createWindow() {
     if (inputField) {
       // Fill the input field with the provided query
       inputField.value = '${query}';
-      
-    
     }
     `);
   });
 
 
 
-  ipcMain.on('obtain-link', () => {
-    browserView.webContents.executeJavaScript(`
-      var resultsArray = [];
-      //get the following data: domain/title/url
-      console.log("did it reach electron");
-      const searchItems = document.querySelectorAll('span[jscontroller="msmzHf"]');
+  // ipcMain.on('obtain-link', () => {
+  //   browserView.webContents.executeJavaScript(`
+  //     var resultsArray = [];
+  //     //get the following data: domain/title/url
+  //     console.log("did it reach electron");
+  //     const searchItems = document.querySelectorAll('span[jscontroller="msmzHf"]');
 
-      // Iterate over each search result item
-      searchItems.forEach(item => {
-        // Extract the domain
-        const domainElement = item.querySelector('.VuuXrf');
-        const domain = domainElement ? domainElement.textContent : '';
+  //     // Iterate over each search result item
+  //     searchItems.forEach(item => {
+  //       // Extract the domain
+  //       const domainElement = item.querySelector('.VuuXrf');
+  //       const domain = domainElement ? domainElement.textContent : '';
 
-        // Extract the title
-        const titleElement = item.querySelector('h3');
-        const title = titleElement ? titleElement.textContent : '';
+  //       // Extract the title
+  //       const titleElement = item.querySelector('h3');
+  //       const title = titleElement ? titleElement.textContent : '';
 
-        // Extract the URL
-        const linkElement = item.querySelector('a');
-        const url = linkElement ? linkElement.href : '';
+  //       // Extract the URL
+  //       const linkElement = item.querySelector('a');
+  //       const url = linkElement ? linkElement.href : '';
 
-        // Create the searchResult object
-        const searchResult = {
-          domain: domain,
-          title: title,
-          URL: url
-        };
+  //       // Create the searchResult object
+  //       const searchResult = {
+  //         domain: domain,
+  //         title: title,
+  //         URL: url
+  //       };
 
-        // Push the result into the array
-        resultsArray.push(searchResult);
-      });
+  //       // Push the result into the array
+  //       resultsArray.push(searchResult);
+  //     });
 
-      // Log the results array to the console
-      console.log(resultsArray);
+  //     // Log the results array to the console
+  //     console.log(resultsArray);
 
-    `);
-  });
+  //   `);
+  // });
 
   ipcMain.on('search-result', (event, query) => {
     browserView.webContents.executeJavaScript(
@@ -176,20 +230,6 @@ function createWindow() {
   });
 
 
-
-
-
-
-  // ipcMain.on('move-down', () => {
-  //   browserView.webContents.executeJavaScript(
-  //     `
-  //     window.scrollTo({
-  //       top: window.scrollY + 135,
-  //       behavior: 'smooth'
-  //     });
-  //   `);
-  //   // browserView.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ArrowDown' });
-  // });
 
 
 
