@@ -33,8 +33,8 @@ let browserView;
 function createWindow() {
   // Create the main browser window
   mainWindow = new BrowserWindow({
-    width: 900,
-    height: 750,
+    width: 400,
+    height: 250,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -64,55 +64,100 @@ function createWindow() {
     }
   });
 
-  browserView.webContents.on('did-navigate', (event, url) => {
-    isSearch = url.includes('google.com/search');
-    if (isSearch) {
-      console.log('Navigated to a Google search result page.');
-      // Execute the code when on a search result page
-      browserView.webContents.executeJavaScript(`
-        var resultsArray = [];
-        //get the following data: domain/title/url
-        console.log("did it reach electron");
-        const searchItems = document.querySelectorAll('span[jscontroller="msmzHf"]');
+browserView.webContents.on('did-navigate', (event, url) => {
+  isSearch = url.includes('google.com/search');
+  if (isSearch) {
+    console.log('Navigated to a Google search result page.');
+    // Execute the code when on a search result page
+    browserView.webContents.executeJavaScript(`
 
-        // Iterate over each search result item
-        searchItems.forEach(item => {
-          // Extract the domain
-          const domainElement = item.querySelector('.VuuXrf');
-          const domain = domainElement ? domainElement.textContent : '';
 
-          // Extract the title
-          const titleElement = item.querySelector('h3');
-          const title = titleElement ? titleElement.textContent : '';
+      // Log the search results tabs array to the console
+      //console.log(searchResultsTabs);
 
-          // Extract the URL
-          const linkElement = item.querySelector('a');
-          const url = linkElement ? linkElement.href : '';
+      var resultsArray = [];
+      // get the following data: domain/title/url
+      console.log("did it reach electron");
+      const searchItems = document.querySelectorAll('span[jscontroller="msmzHf"]');
 
-          // Create the searchResult object
-          const searchResult = {
-            domain: domain,
-            title: title,
-            URL: url
-          };
+      // Iterate over each search result item
+      searchItems.forEach(item => {
+        // Extract the domain
+        const domainElement = item.querySelector('.VuuXrf');
+        const domain = domainElement ? domainElement.textContent : '';
 
-          // Push the result into the array
-          resultsArray.push(searchResult);
-        });
+        // Extract the title
+        const titleElement = item.querySelector('h3');
+        const title = titleElement ? titleElement.textContent : '';
 
-        // Log the results array to the console
-        console.log(resultsArray);
+        // Extract the URL
+        const linkElement = item.querySelector('a');
+        const url = linkElement ? linkElement.href : '';
 
-      `);
-    } else {
-      console.log('Not on a Google search result page.');
-    }
-  });
+        // Create the searchResult object
+        const searchResult = {
+          domain: domain,
+          title: title,
+          URL: url
+        };
 
-  // Set isSearch to false when navigating away from any page
+        // Push the result into the array
+        resultsArray.push(searchResult);
+      });
+
+      // Log the search results array to the console
+      console.log(resultsArray);
+
+    `).then(result => {
+      console.log('JavaScript executed successfully:', result);
+    }).catch(error => {
+      console.error('Error executing JavaScript:', error);
+    });
+  } else {
+    console.log('Not on a Google search result page.');
+  }
+});
+
+
+  // browserView.webContents.on('did-navigate-get-tab', (event, url) => {
+  //   isSearchForTab = url.includes('google.com/search');
+
+  //   if (isSearchForTab) {
+  //     console.log('To obtain tab links.');
+  //     // Execute the code when on a search result page
+  //     browserView.webContents.executeJavaScript(`
+  //       console.log('did it come here to tab links');
+  //       var searchResultsTabs =[];
+  //           const tabElements = document.querySelectorAll('a[data-hveid][href*="/search?"]');
+
+  //           // Iterate over each tab element
+  //           tabElements.forEach(tab => {
+  //               const tabName = tab.innerText;
+  //               const tabUrl = tab.href;
+
+  //               // Create the tab object
+  //               const tabResult = {
+  //                   name: tabName,
+  //                   URL: tabUrl
+  //               };
+
+  //               // Push the tab object into the array
+  //               searchResultsTabs.push(tabResult);
+  //           });
+
+  //           // Log the search results tabs array to the console
+  //           console.log(searchResultsTabs);
+
+  //     `);
+  //   } else {
+  //     console.log('Not on a Google search result page.');
+  //   }
+  // });
+
   browserView.webContents.on('did-navigate-in-page', (event, url) => {
     if (!url.includes('google.com/search')) {
       isSearch = false;
+      isSearchForTab = false;
       console.log('Navigated away from a Google search result page.');
     }
   });
@@ -120,11 +165,11 @@ function createWindow() {
 
 
 
-  
+
   ipcMain.on('browser-command', (event, query) => {
     // Assuming browserView is your BrowserView instance
     var command = query;
-    if (command.includes("up")){
+    if (command.includes("up")) {
       browserView.webContents.executeJavaScript(
         `
         window.scrollTo({
@@ -132,7 +177,7 @@ function createWindow() {
           behavior: 'smooth'
         });
       `);
-    }else if (command.includes("down")){
+    } else if (command.includes("down")) {
       browserView.webContents.executeJavaScript(
         `
         window.scrollTo({
@@ -141,34 +186,34 @@ function createWindow() {
       });
       `);
     }
-    else if (command.includes("refresh")){
+    else if (command.includes("refresh")) {
       browserView.webContents.executeJavaScript(
         `
         location.reload();  
       `);
     }
 
-    else if (command.includes("back")){
+    else if (command.includes("back")) {
       browserView.webContents.executeJavaScript(
         `
         history.back(); 
       `);
     }
-    
+
   });
 
-  ipcMain.on('intent-open-website', (event, query) => {
-    browserView.webContents.executeJavaScript(
-      `
-    // Select the input field (modify the selector based on your HTML structure)
-    var inputField = document.querySelector('input[type="text"]');
-    
-    if (inputField) {
-      // Fill the input field with the provided query
-      inputField.value = '${query}';
-    }
-    `);
-  });
+  // ipcMain.on('intent-open-website', (event, query) => {
+  //   browserView.webContents.executeJavaScript(
+  //     `
+  //   // Select the input field (modify the selector based on your HTML structure)
+  //   var inputField = document.querySelector('input[type="text"]');
+
+  //   if (inputField) {
+  //     // Fill the input field with the provided query
+  //     inputField.value = '${query}';
+  //   }
+  //   `);
+  // });
 
 
 
@@ -185,13 +230,13 @@ function createWindow() {
           searchResult.domain.toLowerCase().includes(word.toLowerCase())
         );
       });
-
       // Extract URLs from matchedResults
       const matchedUrls = matchedResults.map(result => result.URL);
       window.location.href = matchedUrls;
     `);
 
   });
+
 
 
 
@@ -218,7 +263,7 @@ function createWindow() {
 app.whenReady().then(() => {
   runPythonScript();
   createWindow();
-  
+
 });
 
 app.on('window-all-closed', () => {

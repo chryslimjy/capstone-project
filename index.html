@@ -44,29 +44,19 @@
       updateDiv('Command said: ' + browserCommand);
     });
   
-    // If it comes here, the intent is to open a common webpage
-    socket.on('intent-open-website', (data) => {
-      const openWebsite = data.text;
-      updateDiv('Recognized Text: ' + openWebsite);
-      ipcRenderer.send('open-common-website', openWebsite);
-      updateDiv('User said: ' + JSON.stringify(data));
-    });
   
     socket.on('intent-search-query', (data) => {
       var searchQuery = data.text;
+      //print('searh query: ' + searchQuery)
       ipcRenderer.send('search-query', searchQuery);
 
     });
   
-    // function getLink() {
-    //   updateDiv('Check if isSearch is came into function: ' + isSearch);
-    //   ipcRenderer.send('obtain-link');
-    // }
-  
     // For this one, receive and pass array of tokens
     socket.on('intent-open-search-result', (data) => {
       var searchResult = data.text;
-      updateDiv('Received search result array: ' + JSON.stringify(searchResult));
+      //print('search result array' + searchResult)
+      //updateDiv('Received search result array: ' + JSON.stringify(searchResult));
 
      ipcRenderer.send('search-result', searchResult);
 

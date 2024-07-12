@@ -4,6 +4,9 @@ from vosk import Model, KaldiRecognizer
 import pyaudio
 from flask import Flask, render_template
 from flask_socketio import SocketIO
+#speech-recognition
+import speech_recognition as sr
+import pyttsx3
 #NLP stuff
 import nltk
 from nltk.tokenize import word_tokenize
@@ -23,9 +26,11 @@ def index():
     return render_template('index.html')
 
 #model = Model("vosk-model-small-en-us-0.15")
-model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vosk-model-small-en-us-0.15")
-model = Model(model_path)
-r = KaldiRecognizer(model, 48000)
+# model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vosk-model-small-en-us-0.15")
+# model = Model(model_path)
+# r = KaldiRecognizer(model, 48000)
+
+r = sr.Recognizer()
 
 # Find the device index of the microphone you want to use
 def find_microphone_index():
@@ -47,48 +52,44 @@ mic = pyaudio.PyAudio()
 stream = mic.open(format=pyaudio.paInt16, channels=1, rate=48000, input=True, input_device_index=mic_index, frames_per_buffer=2048)
 stream.start_stream()
 
-#dictonary of common misrecognised words
-misrecognitions = {
-    "such": "search",
-    "dutch": "search",
-    "screw": "scroll",
-    "search": "search"
-}
-
-# Function to correct misrecognized words
-def correct_misrecognized_words(tokens, misrecognitions):
-    corrected_tokens = []
-    for token in tokens:
-        if token.lower() in misrecognitions:
-            corrected_tokens.append(misrecognitions[token.lower()])
-        else:
-            corrected_tokens.append(token)
-    return corrected_tokens
 
 
 
 def recognize_speech():
     while True:
         data = stream.read(4096)
-        if r.AcceptWaveform(data):
-            text = r.Result()
-            recognized_text = text[14:-3]
+        data = b''  # Initialize an empty byte string to accumulate audio data
+        for _ in range(65):  # Capture 10 chunks of audio (adjust as needed)
+            chunk = stream.read(4096)
+            data += chunk
+        try:
+            # Convert raw audio data to AudioData
+            audio_data = sr.AudioData(data, sample_rate=48000, sample_width=2)  # Adjust sample_rate and sample_width as needed
+            
+            # Convert audio data to text
+            recognized_text = r.recognize_google(audio_data)
             print("Speech detected:", recognized_text)
+            
+            # Tokenize and process recognized text
             tokens = word_tokenize(str(recognized_text))
-            #process recognized_text correction
-            tokens = correct_misrecognized_words(tokens, misrecognitions)
-            ###############################
+            
             # Remove stop words
             tokens = [word for word in tokens if word.lower() not in stop_words]
             print("Tokens list:", tokens)
+            
             # Perform intent classification
             intent = classify_intent(tokens)
-
-            #handle intent and emit to socket io based on intent sent over
-            #the front end will execute based on intent
+            
+            # Handle intent and emit to socket io based on intent sent over
+            # the front end will execute based on intent
             handle_intent(intent, recognized_text)
+            
+        except sr.UnknownValueError:
+            print("Could not understand audio")
+        except sr.RequestError as e:
+            print(f"Could not request results; {e}")
 
-            #socketio.emit('speech_recognition', {'text': recognized_text})
+            socketio.emit('speech_recognition', {'text': recognized_text})
 
 # Update the socketio.on_event to handle events from the Node.js application
 @socketio.on('connect')
@@ -119,7 +120,7 @@ def check_tokens_for_search_commands(tokens):
     return False
 
 def check_tokens_for_open_search_results(tokens):
-    action_words = ["open","click"]
+    action_words = ["open","click","go"]
     for token in tokens:
         if token.lower() in action_words:
             return True
@@ -178,14 +179,14 @@ def classify_intent(tokens):  #(improve this)
 def handle_intent(intent, recognized_text): #tokens
     if intent == 'web_search':
         cleaned_tokens = remove_search_phrases(recognized_text)
-        print(cleaned_tokens) 
+        print(recognized_text) 
         print("The intent is to perform a search")
         socketio.emit('intent-search-query', {'text': cleaned_tokens})
 
     elif intent == 'open_search_result':
         tokens = word_tokenize(str(recognized_text))
         print("The intent is to open a search result")
-        socketio.emit('intent-open-search-result', {'text': recognized_text})
+        socketio.emit('intent-open-search-result', {'text': tokens})
     
     elif intent =='action':
         print("The intent is to carry out action commands")
