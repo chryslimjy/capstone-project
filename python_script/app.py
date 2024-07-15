@@ -1,6 +1,6 @@
 # speech to text
 import os
-from vosk import Model, KaldiRecognizer
+# from vosk import Model, KaldiRecognizer
 import pyaudio
 from flask import Flask, render_template
 from flask_socketio import SocketIO
