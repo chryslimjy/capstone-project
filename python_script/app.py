@@ -13,6 +13,15 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 import re
 
+#MODEL
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from sklearn.preprocessing import LabelEncoder
+import numpy as np
+import pickle
+###########################
+
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins='*')  
 
@@ -78,7 +87,7 @@ def recognize_speech():
             print("Tokens list:", tokens)
             
             # Perform intent classification
-            intent = classify_intent(tokens)
+            intent = classify_intent(recognized_text)
             
             # Handle intent and emit to socket io based on intent sent over
             # the front end will execute based on intent
@@ -138,7 +147,7 @@ def check_tokens_for_commands(tokens):
 ############################
 def remove_search_phrases(text):
     # Define the phrases to be removed
-    phrases_to_remove = ['search for', 'i want to search for']
+    phrases_to_remove = ['search for']
     
     # Tokenize the input string
     tokens = text.split()
@@ -164,31 +173,61 @@ def remove_search_phrases(text):
 
 
 
-def classify_intent(tokens):  #(improve this)
-    # Simple rule-based intent classification
-    if check_tokens_for_search_commands(tokens):
-        return 'web_search'
-    elif check_tokens_for_commands(tokens):
-        return 'action'
-    elif check_tokens_for_open_search_results(tokens):
-        return 'open_search_result'
-    else:
-        return 'unknown'
+# def classify_intent(tokens):  #(improve this)
+#     # Simple rule-based intent classification
+#     if check_tokens_for_search_commands(tokens):
+#         return 'web_search'
+#     elif check_tokens_for_commands(tokens):
+#         return 'action'
+#     elif check_tokens_for_open_search_results(tokens):
+#         return 'open_search_result'
+#     else:
+#         return 'unknown'
+
+# Load the tokenizer
+with open('model/tokenizer.pkl', 'rb') as f:
+    tokenizer = pickle.load(f)
+
+# Load the model
+model_path = 'model/classify_intent.keras'
+model = load_model(model_path)
+
+# Load the label encoder
+label_encoder = LabelEncoder()
+label_encoder.classes_ = np.load('model/classes.npy', allow_pickle=True)
+
+max_sequence_length = 100  # Same max_sequence_length as used during training
+
+def classify_intent(tokens):
+    # Tokenize and pad the input tokens
+    sequences = tokenizer.texts_to_sequences([tokens])
+    padded_sequences = pad_sequences(sequences, maxlen=max_sequence_length)
+    
+    # Make predictions
+    predictions = model.predict(padded_sequences)
+    
+    # Convert predictions to class labels (indices)
+    predicted_class = predictions.argmax(axis=-1)[0]
+    
+    # Decode the predicted class to get the intent label
+    predicted_label = label_encoder.inverse_transform([predicted_class])[0]
+    print(predicted_label)
+    return predicted_label
 
 #pass intent over to web
 def handle_intent(intent, recognized_text): #tokens
-    if intent == 'web_search':
+    if intent == 'SearchQuery':
         cleaned_tokens = remove_search_phrases(recognized_text)
         print(recognized_text) 
         print("The intent is to perform a search")
         socketio.emit('intent-search-query', {'text': cleaned_tokens})
 
-    elif intent == 'open_search_result':
+    elif intent == 'OpenSearchResult':
         tokens = word_tokenize(str(recognized_text))
         print("The intent is to open a search result")
         socketio.emit('intent-open-search-result', {'text': tokens})
     
-    elif intent =='action':
+    elif intent =='BrowserCommand':
         print("The intent is to carry out action commands")
         socketio.emit('intent-browser-command', {'text': recognized_text})
     else:
