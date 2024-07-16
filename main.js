@@ -4,28 +4,28 @@ const path = require('path');
 
 //const pythonMic = path.join(__dirname, 'python_script', 'app.py');
 //add comment for commit
-function runPythonScript() {
-  //const pythonProcess = spawn('python', ['python_script/app.py']);
+// function runPythonScript() {
+//   //const pythonProcess = spawn('python', ['python_script/app.py']);
 
-  const pythonScriptPath = path.join(__dirname, 'python_script', 'app.py');
-  const pythonProcess = spawn('python', [pythonScriptPath], { cwd: path.join(__dirname, 'python_script') });
+//   const pythonScriptPath = path.join(__dirname, 'python_script', 'app.py');
+//   const pythonProcess = spawn('python', [pythonScriptPath], { cwd: path.join(__dirname, 'python_script') });
 
-  // Handle output
-  pythonProcess.stdout.on('data', (data) => {
-    console.log(`Python stdout: ${data}`);
-  });
+//   // Handle output
+//   pythonProcess.stdout.on('data', (data) => {
+//     console.log(`Python stdout: ${data}`);
+//   });
 
-  console.log("test");
+//   console.log("test");
 
-  pythonProcess.stderr.on('data', (data) => {
-    console.error(`Python stderr: ${data}`);
-  });
+//   pythonProcess.stderr.on('data', (data) => {
+//     console.error(`Python stderr: ${data}`);
+//   });
 
-  // Handle exit
-  pythonProcess.on('close', (code) => {
-    console.log(`Python process exited with code ${code}`);
-  });
-}
+//   // Handle exit
+//   pythonProcess.on('close', (code) => {
+//     console.log(`Python process exited with code ${code}`);
+//   });
+// }
 
 let mainWindow;
 let browserView;
@@ -261,7 +261,7 @@ browserView.webContents.on('did-navigate', (event, url) => {
 }
 
 app.whenReady().then(() => {
-  runPythonScript();
+  //runPythonScript();
   createWindow();
 
 });
