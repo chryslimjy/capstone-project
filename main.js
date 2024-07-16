@@ -173,7 +173,7 @@ browserView.webContents.on('did-navigate', (event, url) => {
       browserView.webContents.executeJavaScript(
         `
         window.scrollTo({
-          top: window.scrollY - 120,
+          top: window.scrollY - 130,
           behavior: 'smooth'
         });
       `);
@@ -181,7 +181,7 @@ browserView.webContents.on('did-navigate', (event, url) => {
       browserView.webContents.executeJavaScript(
         `
         window.scrollTo({
-        top: window.scrollY + 135,
+        top: window.scrollY + 155,
         behavior: 'smooth'
       });
       `);
