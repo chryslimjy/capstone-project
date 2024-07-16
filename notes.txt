@@ -1,0 +1,19 @@
+<span jscontroller="msmzHf" jsaction="rcuQ6b:npT2md;PYDNKe:bLV6Bd;mLt3mc"><a jsname="UWckNb"
+    href="https://keras.io/api/layers/activation_layers/leaky_relu/"
+    data-ved="2ahUKEwjp7aDmn-WGAxVGRmwGHTlfDwwQFnoECBMQAQ"
+    ping="/url?sa=t&amp;source=web&amp;rct=j&amp;opi=89978449&amp;url=https://keras.io/api/layers/activation_layers/leaky_relu/&amp;ved=2ahUKEwjp7aDmn-WGAxVGRmwGHTlfDwwQFnoECBMQAQ"><br>
+    <h3 class="LC20lb MBeuO DKV0Md">LeakyReLU layer</h3>
+    <div class="notranslate HGLrXd NJjxre iUh30 ojE3Fb">
+      <div class="q0vns"><span class="DDKf1c">
+          <div class="eqA2re UnOTSe Vwoesf" aria-hidden="true"><img class="XNo5Ab"
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAY1BMVEXQAADPAADhg4PmnZ3WRkbMAADihoblmZnRFxf45OT////fenrrsLDhf3/23t7fd3fcaGjpqqrllZX89PTtt7fdbW3jjo7yy8vRDQ3SICDvwsL9+fnUNTX34uL009PyzMzaX1/gsMtTAAAAiklEQVR4Ac3RRQLDMBADwFXTkAphxv9/shAG+x5dDGO2XDYA1soxN+M+dJqWbTgHg8sH/vYkXzjimx5G80xRotpGHAyiRPW8Ef2ADE1R45ukCw2SVsTY1GBiemQCJaammBmjXIkeBEXE0tSgwBteT42CklWNIzbjw0tesT1h0PUYKn421LSfDblovvQ+Bs395c8yAAAAAElFTkSuQmCC"
+              style="height:26px;width:26px" alt="" data-csiid="10" data-atf="1"></div>
+        </span>
+        <div class="CA5RN">
+          <div><span class="VuuXrf">Keras</span></div>
+          <div class="byrV5b"><cite class="qLRx3b tjvcx GvPZzd cHaqb" role="text">https://keras.io<span
+                class="ylgVCe ob9lvb" role="text"> › layers › activation_layers › leaky_relu</span></cite></div>
+        </div>
+      </div>
+    </div><span jscontroller="IX53Tb" jsaction="rcuQ6b:npT2md" style="display:none"></span>
+  </a></span>

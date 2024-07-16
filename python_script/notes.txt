@@ -1,0 +1,31 @@
+list of 'action' words:
+
+go-click-open-select
+
+who-what-where-when-why-how-search(?)
+
+https://medium.com/naukri-engineering/speech-recognition-in-python-fcda027a97a1
+https://www.geeksforgeeks.org/python-convert-speech-to-text-and-text-to-speech/
+
+
+https://www.youtube.com/watch?v=k6nIxWGdrS4
+
+      console.log('did it come here to tab links');
+      
+      var searchResultsTabs = [];
+      const tabElements = document.querySelectorAll('a[data-hveid][href*="/search?"]');
+      
+      // Iterate over each tab element
+      tabElements.forEach(tab => {
+        const tabName = tab.innerText;
+        const tabUrl = tab.href;
+
+        // Create the tab object
+        const tabResult = {
+          name: tabName,
+          URL: tabUrl
+        };
+
+        // Push the tab object into the array
+        searchResultsTabs.push(tabResult);
+      });

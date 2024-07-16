@@ -1,85 +1,73 @@
-<!-- index.html -->
 
-<!-- commit before proceeding-->
-
+<!--test-->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Speech Recognition Example</title>
+  <title>NLP Web Browsing</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
+
 </head>
+
+
+
 <body>
+
   <script>
     // Connect to the Socket.IO server
     const socket = io('http://localhost:5000');
     const { ipcRenderer } = require('electron');
 
+  
+    // Function to update the div
+    function updateDiv(message) {
+      const receivedTextDiv = document.getElementById('received-text');
+      receivedTextDiv.innerHTML = message;
+    }
+  
     // Listen for the 'connect' event, indicating successful connection
     socket.on('connect', () => {
-      console.log('Connected to the Socket.IO server');
+      updateDiv('Connected to the Socket.IO server');
     });
-
+  
     // Listen for the 'disconnect' event, indicating a disconnection
     socket.on('disconnect', (reason) => {
-      console.log('Disconnected from the Socket.IO server. Reason:', reason);
+      updateDiv('Disconnected from the Socket.IO server. Reason: ' + reason);
     });
-
-    // Listen for the speech recognition event
-    socket.on('speech_recognition', (data) => {
-      const recognizedText = data.text;
-      console.log('Recognized Text:', recognizedText);
-
-      executeCommand(recognizedText.toString())
-
-      // Add your logic to execute functions based on the recognized text
-      // For example, you can call different functions or update the UI
-
-      // Log a message indicating that the speech_recognition event is received
-      console.log('Speech Recognition Event Received:', data);
+  
+    socket.on('intent-browser-command', (data) => {
+      var browserCommand = data.text;
+      ipcRenderer.send('browser-command', browserCommand);
+      updateDiv('Command said: ' + browserCommand);
     });
+  
+  
+    socket.on('intent-search-query', (data) => {
+      var searchQuery = data.text;
+      //print('searh query: ' + searchQuery)
+      ipcRenderer.send('search-query', searchQuery);
 
-    // Optional: Listen for other Socket.IO events and handle them as needed
-    socket.on('custom_event', (data) => {
-      console.log('Custom Event Received:', data);
     });
+  
+    // For this one, receive and pass array of tokens
+    socket.on('intent-open-search-result', (data) => {
+      var searchResult = data.text;
+      //print('search result array' + searchResult)
+      //updateDiv('Received search result array: ' + JSON.stringify(searchResult));
 
-    //scripts for functions
-    function executeCommand(text) {
+     ipcRenderer.send('search-result', searchResult);
 
-      if(text == 'click'){
-        ipcRenderer.send('execute-command-click');
-        //need to highlight and assign number to each <a> tag
-        
-          //accurately select the chosen <a> tag
-
-            //enter the selected <a> tag
-      } 
-
-      else if(text.includes('search') || text.includes('such')){
-        const searchQuery = text.substring('search'.length).trim();
-        ipcRenderer.send('search-query', searchQuery)
-      }
-
-      else if(text.includes('input')){
-        const searchBar = text.substring('input'.length).trim();
-        ipcRenderer.send('search-bar', searchBar);
-
-      }else if(text == 'submit'){
-          ipcRenderer.send('submit');
-        }
-      
-      
-      else{
-        console.log('command not recognised');
-      }
-      
-    }
-
-
-
+    });
   
   </script>
+  <div>
+
+  </div>
+
+  <h4><div id="received-text"></div></h4>
 </body>
+
 </html>

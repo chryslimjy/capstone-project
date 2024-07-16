@@ -1,0 +1,14 @@
+TODO:
+TMR MOST IMP: OPTIMIZE THE SPEECH + INTENT RECOGNITION
+implment speech input correction:
+logic: if such is first and/or 2nd word, replace it with 'search'
+logic: if only two words and include screw/scroll, treat it as command
+
+optimize the intent. ensure it works 90% of the time
+
+
+
+Bonus:
+implement a model for web browsing?
+https://stackoverflow.com/questions/44213549/python-nlp-intent-identification
+https://demo.deeppavlov.ai/#/examples/token_ner
