@@ -55,7 +55,7 @@
     // For this one, receive and pass array of tokens
     socket.on('intent-open-search-result', (data) => {
       var searchResult = data.text;
-      //print('search result array' + searchResult)
+      console.log('search result array' + searchResult)
       //updateDiv('Received search result array: ' + JSON.stringify(searchResult));
 
      ipcRenderer.send('search-result', searchResult);

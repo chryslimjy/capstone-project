@@ -6,7 +6,6 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO
 #speech-recognition
 import speech_recognition as sr
-import pyttsx3
 #NLP stuff
 import nltk
 from nltk.tokenize import word_tokenize
@@ -190,6 +189,7 @@ with open('model/tokenizer.pkl', 'rb') as f:
 
 # Load the model
 model_path = 'model/classify_intent.keras'
+#model_path = 'model/classify_intent_word2vec.keras'
 model = load_model(model_path)
 
 # Load the label encoder
@@ -225,6 +225,7 @@ def handle_intent(intent, recognized_text): #tokens
     elif intent == 'OpenSearchResult':
         tokens = word_tokenize(str(recognized_text))
         print("The intent is to open a search result")
+        print(tokens)
         socketio.emit('intent-open-search-result', {'text': tokens})
     
     elif intent =='BrowserCommand':

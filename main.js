@@ -173,7 +173,7 @@ browserView.webContents.on('did-navigate', (event, url) => {
       browserView.webContents.executeJavaScript(
         `
         window.scrollTo({
-          top: window.scrollY - 130,
+          top: window.scrollY - 180,
           behavior: 'smooth'
         });
       `);
@@ -181,7 +181,7 @@ browserView.webContents.on('did-navigate', (event, url) => {
       browserView.webContents.executeJavaScript(
         `
         window.scrollTo({
-        top: window.scrollY + 155,
+        top: window.scrollY + 200,
         behavior: 'smooth'
       });
       `);
@@ -232,6 +232,7 @@ browserView.webContents.on('did-navigate', (event, url) => {
       });
       // Extract URLs from matchedResults
       const matchedUrls = matchedResults.map(result => result.URL);
+      console.log(matchedUrls)
       window.location.href = matchedUrls;
     `);
 
