@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const { spawn } = require('child_process');
 const path = require('path');
+const { wordsToNumbers } = require('words-to-numbers');
 
 //const pythonMic = path.join(__dirname, 'python_script', 'app.py');
 //add comment for commit
@@ -64,67 +65,78 @@ function createWindow() {
     }
   });
 
-browserView.webContents.on('did-navigate', (event, url) => {
-  isSearch = url.includes('google.com/search');
-  if (isSearch) {
-    console.log('Navigated to a Google search result page.');
-    // Execute the code when on a search result page
-    browserView.webContents.executeJavaScript(`
-
-
-      // Log the search results tabs array to the console
-      //console.log(searchResultsTabs);
-
-      var resultsArray = [];
-      
-      
-      // get the following data: domain/title/url
-      console.log("did it reach electron");
-      const searchItems = document.querySelectorAll('span[jscontroller="msmzHf"]');
-
-      // Iterate over each search result item
-      searchItems.forEach(item => {
-    // Extract the domain
-    const domainElement = item.querySelector('.VuuXrf');
-    const domain = domainElement ? domainElement.textContent : '';
-
-    // Extract the title
-    const titleElement = item.querySelector('h3');
-    const title = titleElement ? titleElement.textContent : '';
-
-    // Extract the URL
-    const linkElement = item.querySelector('a');
-    const url = linkElement ? linkElement.href : '';
-
-    let index = 1; // Changed from 'int' to 'let'
-
-    // Create the searchResult object
-    const searchResult = {
-      domain: domain,
-      title: title,
-      URL: url,
-      index: index
-    };
-
-    // Push the result into the array
-    resultsArray.push(searchResult);
-
-    index += 1; // Increment the index
-});
-
-
-      // Log the search results array to the console
-      console.log(resultsArray);
-
-    `).then(result => {
-      console.log('JavaScript executed successfully:', result);
-    }).catch(error => {
-      console.error('Error executing JavaScript:', error);
-    });
-  } else {
-    console.log('Not on a Google search result page.');
-  }
-});
+  browserView.webContents.on('did-navigate', (event, url) => {
+    isSearch = url.includes('google.com/search');
+    if (isSearch) {
+      console.log('Navigated to a Google search result page.');
+      // Execute the code when on a search result page
+      browserView.webContents.executeJavaScript(`
+  
+        var resultsArray = [];
+        
+        // Get the search result elements
+        const searchItems = document.querySelectorAll('span[jscontroller="msmzHf"]');
+  
+        // Initialize index for numbering the search results
+        let index = 1;
+  
+        // Iterate over each search result item
+        searchItems.forEach(item => {
+          // Extract the domain
+          const domainElement = item.querySelector('.VuuXrf');
+          const domain = domainElement ? domainElement.textContent : '';
+  
+          // Extract the title
+          const titleElement = item.querySelector('h3');
+          const title = titleElement ? titleElement.textContent : '';
+  
+          // Extract the URL
+          const linkElement = item.querySelector('a');
+          const url = linkElement ? linkElement.href : '';
+  
+          // Create the searchResult object
+          const searchResult = {
+            domain: domain,
+            title: title,
+            URL: url,
+            index: index
+          };
+  
+          // Push the result into the array
+          resultsArray.push(searchResult);
+  
+          // Create a new div element to display the index
+          const indexDiv = document.createElement('div');
+          indexDiv.style.position = 'absolute'; // Position it at the top left
+          indexDiv.style.top = '0';
+          indexDiv.style.left = '0';
+          indexDiv.style.backgroundColor = 'yellow'; // Style to make it visible
+          indexDiv.style.color = 'black';
+          indexDiv.style.padding = '5px';
+          indexDiv.style.fontSize = '16px';
+          indexDiv.style.zIndex = '999'; // Ensure it stays on top of other elements
+          indexDiv.textContent = index; // Set the index as the content
+  
+          // Position the indexDiv inside the search result item
+          item.style.position = 'relative'; // Ensure the parent item is positioned
+          item.appendChild(indexDiv); // Append the indexDiv to the search result
+  
+          index += 1; // Increment the index
+        });
+  
+        // Log the search results array to the console
+        console.log(resultsArray);
+  
+      `).then(result => {
+        console.log('JavaScript executed successfully:', result);
+      }).catch(error => {
+        console.error('Error executing JavaScript:', error);
+      });
+    } else {
+      console.log('Not on a Google search result page.');
+    }
+  });
+  
 
 
   // browserView.webContents.on('did-navigate-get-tab', (event, url) => {
