@@ -40,6 +40,10 @@ def index():
 
 r = sr.Recognizer()
 
+#Updated
+r.energy_threshold = 300  # Adjust sensitivity to detect speech
+r.pause_threshold = 0.8   # Duration of pause to consider as speech end
+
 # Find the device index of the microphone you want to use
 def find_microphone_index():
     audio = pyaudio.PyAudio()
@@ -64,38 +68,39 @@ stream.start_stream()
 
 
 def recognize_speech():
-    while True:
-        data = stream.read(4096)
-        data = b''  # Initialize an empty byte string to accumulate audio data
-        for _ in range(65):  # Capture 10 chunks of audio (adjust as needed)
-            chunk = stream.read(4096)
-            data += chunk
-        try:
-            # Convert raw audio data to AudioData
-            audio_data = sr.AudioData(data, sample_rate=48000, sample_width=2)  # Adjust sample_rate and sample_width as needed
-            
-            # Convert audio data to text
-            recognized_text = r.recognize_google(audio_data)
-            print("Speech detected:", recognized_text)
-            
-            # Tokenize and process recognized text
-            tokens = word_tokenize(str(recognized_text))
-            
-            # Remove stop words
-            tokens = [word for word in tokens if word.lower() not in stop_words]
-            print("Tokens list:", tokens)
-            
-            # Perform intent classification
-            intent = classify_intent(recognized_text)
-            
-            # Handle intent and emit to socket io based on intent sent over
-            # the front end will execute based on intent
-            handle_intent(intent, recognized_text)
-            
-        except sr.UnknownValueError:
-            print("Could not understand audio")
-        except sr.RequestError as e:
-            print(f"Could not request results; {e}")
+    # Use the default microphone as the audio source
+    with sr.Microphone(sample_rate=48000) as source:
+        print("Adjusting for ambient noise... Please wait.")
+        r.adjust_for_ambient_noise(source)  # Adjust for background noise
+
+        while True:
+            print("Waiting for audio")
+
+            try:
+                # Capture the speech (starts automatically when speaking)
+                audio_data = r.listen(source)  # Automatically stops when speech ends
+
+                # Convert audio data to text
+                recognized_text = r.recognize_google(audio_data)
+                print("Speech detected:", recognized_text)
+                
+                # Tokenize and process recognized text
+                tokens = word_tokenize(str(recognized_text))
+                
+                # Remove stop words
+                tokens = [word for word in tokens if word.lower() not in stop_words]
+                print("Tokens list:", tokens)
+                
+                # Perform intent classification
+                intent = classify_intent(recognized_text)
+                
+                # Handle intent and emit to socket io based on intent
+                handle_intent(intent, recognized_text)
+                
+            except sr.UnknownValueError:
+                print("Could not understand audio")
+            except sr.RequestError as e:
+                print(f"Could not request results; {e}")
 
             socketio.emit('speech_recognition', {'text': recognized_text})
 

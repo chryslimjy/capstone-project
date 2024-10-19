@@ -76,34 +76,42 @@ browserView.webContents.on('did-navigate', (event, url) => {
       //console.log(searchResultsTabs);
 
       var resultsArray = [];
+      
+      
       // get the following data: domain/title/url
       console.log("did it reach electron");
       const searchItems = document.querySelectorAll('span[jscontroller="msmzHf"]');
 
       // Iterate over each search result item
       searchItems.forEach(item => {
-        // Extract the domain
-        const domainElement = item.querySelector('.VuuXrf');
-        const domain = domainElement ? domainElement.textContent : '';
+    // Extract the domain
+    const domainElement = item.querySelector('.VuuXrf');
+    const domain = domainElement ? domainElement.textContent : '';
 
-        // Extract the title
-        const titleElement = item.querySelector('h3');
-        const title = titleElement ? titleElement.textContent : '';
+    // Extract the title
+    const titleElement = item.querySelector('h3');
+    const title = titleElement ? titleElement.textContent : '';
 
-        // Extract the URL
-        const linkElement = item.querySelector('a');
-        const url = linkElement ? linkElement.href : '';
+    // Extract the URL
+    const linkElement = item.querySelector('a');
+    const url = linkElement ? linkElement.href : '';
 
-        // Create the searchResult object
-        const searchResult = {
-          domain: domain,
-          title: title,
-          URL: url
-        };
+    let index = 1; // Changed from 'int' to 'let'
 
-        // Push the result into the array
-        resultsArray.push(searchResult);
-      });
+    // Create the searchResult object
+    const searchResult = {
+      domain: domain,
+      title: title,
+      URL: url,
+      index: index
+    };
+
+    // Push the result into the array
+    resultsArray.push(searchResult);
+
+    index += 1; // Increment the index
+});
+
 
       // Log the search results array to the console
       console.log(resultsArray);
