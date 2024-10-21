@@ -9,3 +9,6 @@ To obtain the necesary files (if you do not want to run an .exe):
 2) npm install the necessary file in capstone-project
 3) go to python_script folder and run the .bat file
 4) after the .bat file starts running, go back to the capstone-project folder on the console and run NPM start
+
+Video demo link:
+https://youtu.be/jQzRsb3CZkw?si=cRzVOj6eQNtUPXCb
